@@ -1,1 +1,36 @@
+# Wyklucz katalogi IntelliJ IDEA
 .idea/
+*.iml
+
+# Wyklucz katalogi Eclipse
+.project
+.classpath
+.settings/
+
+# Wyklucz katalogi generowane przez systemy budowania
+target/
+out/
+
+# Wyklucz pliki tymczasowe i konfiguracyjne systemu operacyjnego
+.DS_Store
+Thumbs.db
+
+# Wyklucz katalogi/logi generowane przez Maven
+mvnw
+mvnw.cmd
+.wrapper/
+log/
+
+# Wyklucz pliki tymczasowe systemu operacyjnego
+*.swp
+*.swo
+*.bak
+
+# Wyklucz pliki związane z konfiguracją IDE
+.vscode/
+*.log
+*.idea/
+*.iml
+
+# Wyklucz pliki konfiguracyjne systemów kontroli wersji
+*.orig
