@@ -60,17 +60,17 @@ services:
       - net-microservice
     restart: unless-stopped
 
-  cartDb:
+  photoDb:
     image: postgres:latest
-    container_name: cartDb
+    container_name: photoDb
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: root
-      POSTGRES_DB: cart_db
+      POSTGRES_DB: photo_db
     ports:
-      - "5436:5432"
+      - "5438:5432"
     volumes:
-      - cart_data:/var/lib/postgresql/data
+      - photo_data:/var/lib/postgresql/data
     networks:
       - net-microservice
     restart: unless-stopped
@@ -100,5 +100,5 @@ volumes:
   product_data:
   order_data:
   payment_data:
-  cart_data:
+  photo_data:
   notification_data:

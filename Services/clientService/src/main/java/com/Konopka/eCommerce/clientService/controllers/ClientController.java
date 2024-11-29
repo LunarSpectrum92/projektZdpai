@@ -14,10 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/client")
-
-
-
+@RequestMapping("/api")
 public class ClientController {
 
     ClientService clientService;
@@ -33,6 +30,12 @@ public class ClientController {
         return clientService.getClients();
     }
 
+
+
+    @GetMapping("/client/{id}")
+    public ResponseEntity<Client> getClient(@PathVariable int id) {
+        return clientService.getClientById(id);
+    }
 
 
     @PostMapping("/createClient")

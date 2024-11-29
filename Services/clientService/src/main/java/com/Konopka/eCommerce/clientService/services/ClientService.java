@@ -26,10 +26,20 @@ public class ClientService {
         return cr.findAll();
     }
 
-//
-//    public Client getClient(Integer id){
-//        return cr.findById(id).orElseThrow( new ClientNotFoundException("klient o id" + id + "nie został znaleziony"));
-//    }
+
+
+    public ResponseEntity<Client> getClientById(int id){
+        Optional<Client> client = cr.findById(id);
+        if(client.isPresent()){
+            return new ResponseEntity<>(client.get(), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+
+
+
 
 //    public Client getClient(Integer id){
 //        return cr.findById(id).get();
