@@ -19,6 +19,18 @@ spring:
     hibernate:
       ddl-auto: create
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  cloud:
+    openfeign:
+      client:
+        config:
+          feignName:
+            connectTimeout: 5000
+            readTimeout: 5000
+            loggerLevel: full
+  servlet:
+    multipart:
+      max-request-size: 2GB
+      max-file-size: 2GB
 
 
 

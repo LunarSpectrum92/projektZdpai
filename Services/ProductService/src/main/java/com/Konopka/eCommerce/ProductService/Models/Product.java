@@ -25,6 +25,9 @@ public class Product {
 
     private String description;
 
+    private String brand;
+
+
     private double price;
 
     private int quantity;
@@ -36,6 +39,10 @@ public class Product {
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     private List<Category> category;
+
+    @ElementCollection
+    @CollectionTable(name="photo-ids")
+    private List<Integer> photoIds;
 
     private int discount;
 

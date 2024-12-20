@@ -45,6 +45,12 @@ services:
       - net-microservice
     restart: unless-stopped
 
+
+
+
+
+
+
   paymentDb:
     image: postgres:latest
     container_name: paymentDb
@@ -91,6 +97,61 @@ services:
       - net-microservice
     restart: unless-stopped
 
+
+
+
+
+
+  commentDb:
+    image: postgres:latest
+    container_name: commentDb
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: root
+      POSTGRES_DB: comment_db
+    ports:
+      - "5439:5432"
+    volumes:
+      - comment_data:/var/lib/postgresql/data
+    networks:
+      - net-microservice
+    restart: unless-stopped
+
+
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - net-microservice
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: ms_kafka
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+    networks:
+      - net-microservice
+
+
+
+
+
+
 networks:
   net-microservice:
     driver: bridge
@@ -102,3 +163,4 @@ volumes:
   payment_data:
   photo_data:
   notification_data:
+  comment_data:

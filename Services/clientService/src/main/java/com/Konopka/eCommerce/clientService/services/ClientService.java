@@ -1,13 +1,22 @@
 package com.Konopka.eCommerce.clientService.services;
 
+import com.Konopka.eCommerce.PhotoService.Models.Photo;
+import com.Konopka.eCommerce.clientService.DTO.ClientRequest;
+import com.Konopka.eCommerce.clientService.models.Address;
 import com.Konopka.eCommerce.clientService.models.Client;
+import com.Konopka.eCommerce.clientService.models.PhotoFeign;
+import com.Konopka.eCommerce.clientService.repositories.AddressRepository;
 import com.Konopka.eCommerce.clientService.repositories.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 
@@ -15,10 +24,14 @@ import java.util.Optional;
 public class ClientService {
 
     private final ClientRepository cr;
+    private final AddressRepository addressRepository;
+    private final PhotoFeign photoFeign;
 
     @Autowired
-    public ClientService(ClientRepository cr) {
+    public ClientService(ClientRepository cr, PhotoFeign photoFeign, AddressRepository addressRepository) {
         this.cr = cr;
+        this.addressRepository = addressRepository;
+        this.photoFeign = photoFeign;
     }
 
 
@@ -30,32 +43,57 @@ public class ClientService {
 
     public ResponseEntity<Client> getClientById(int id){
         Optional<Client> client = cr.findById(id);
-        if(client.isPresent()){
-            return new ResponseEntity<>(client.get(), HttpStatus.OK);
+        return client.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+
+
+
+    public ResponseEntity<Client> createClient(ClientRequest clientRequest){
+            Client client = Client.builder()
+                    .name(clientRequest.name())
+                    .surname(clientRequest.surname())
+                    .phone(clientRequest.phone())
+                    .address(clientRequest.address())
+                    .build();
+            return new ResponseEntity<>(cr.save(client), HttpStatus.CREATED);
+
+    }
+
+
+    public ResponseEntity<Photo> addAvatar(int id, MultipartFile photo) {
+        Optional<Client> clientOptional = cr.findById(id);
+
+        if (clientOptional.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        Client client = clientOptional.get();
+
+        ResponseEntity<Photo> photoResponse = photoFeign.addPhoto(photo);
+        if (photoResponse.getBody() == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        client.setPhotoId(photoResponse.getBody().getPhotoId());
+        cr.save(client);
+
+        return new ResponseEntity<>(photoResponse.getBody(), HttpStatus.CREATED);
+    }
+
+
+
+    public ResponseEntity<Path> findAvatarById(Integer id){
+        ResponseEntity<Path> path = photoFeign.findPhotoById(id);
+        if(path.hasBody()){
+            return new ResponseEntity<>(path.getBody(), HttpStatus.OK);
+        }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 
 
 
-
-//    public Client getClient(Integer id){
-//        return cr.findById(id).get();
-//    }
-
-
-
-
-
-    public ResponseEntity<Client> createClient(Client client){
-        if(cr.findById(client.getUserId()).isPresent()){
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-            return new ResponseEntity<>(cr.save(client), HttpStatus.CREATED);
-
-    }
 
 
 }

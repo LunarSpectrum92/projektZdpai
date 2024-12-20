@@ -32,6 +32,7 @@ public class ProductDtoMapper implements Function<Product, ProductDto> {
                 product.getProductId(),
                 product.getProductName(),
                 product.getDescription(),
+                product.getBrand(),
                 product.getPrice(),
                 product.getQuantity(),
                 product.getCategory().stream()

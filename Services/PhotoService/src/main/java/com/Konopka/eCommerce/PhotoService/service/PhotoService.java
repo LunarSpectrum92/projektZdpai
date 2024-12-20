@@ -1,18 +1,20 @@
 package com.Konopka.eCommerce.PhotoService.service;
 
-
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import com.Konopka.eCommerce.PhotoService.Models.Photo;
 import com.Konopka.eCommerce.PhotoService.Repository.PhotoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,58 +38,130 @@ public class PhotoService {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        String FileName = photoFile.getOriginalFilename();
 
-        File file = new File(FilePath + File.separator + photoFile.getOriginalFilename());
-
-        if(!Objects.equals(file.getParent(), FilePath)){
-            throw new SecurityException("wrong file");
+        if (FileName == null || !FileName.contains(".")) {
+            throw new RuntimeException("wrong name of file");
         }
 
-        if (!Files.probeContentType(file.toPath()).equals("image/jpeg") &&
-                !Files.probeContentType(file.toPath()).equals("image/png")) {
+        String FileExt = FileName.substring(FileName.lastIndexOf(".") + 1).toLowerCase();
+        if (!FileExt.equals("jpg") && !FileExt.equals("jpeg") && !FileExt.equals("png")) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        String uniqueFileName = UUID.randomUUID().toString() + "." + FileExt;
+
+        Path targetPath = Paths.get(FilePath).resolve(uniqueFileName).normalize();
+
+
+        if (!targetPath.startsWith(Paths.get(FilePath))) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        Files.copy(photoFile.getInputStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
+        Files.copy(photoFile.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
 
         Photo photo = Photo.builder()
-                .photoPath(FilePath + File.separator + photoFile.getOriginalFilename())
-                .photoName(photoFile.getOriginalFilename())
+                .photoPath(targetPath.toString())
+                .photoName(FileName)
                 .build();
         photoRepository.save(photo);
+
         return new ResponseEntity<>(photo, HttpStatus.CREATED);
     }
 
 
 
-    public ResponseEntity<File> findPhotoById(Integer photoId) {
-        if(photoRepository.findById(photoId).isEmpty()) {
+//    public ResponseEntity<byte[]> findPhotoById(Integer photoId) {
+//        Optional<Photo> photoOpt = photoRepository.findById(photoId);
+//        if (photoOpt.isEmpty()) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//
+//        Path photoPath = Path.of(photoOpt.get().getPhotoPath()).normalize();
+//        try {
+//            Resource resource = new UrlResource(photoPath.toUri());
+//            if (resource.exists() && resource.isReadable()) {
+//                byte[] fileContent = Files.readAllBytes(photoPath);
+//                HttpHeaders headers = new HttpHeaders();
+//                headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+//                headers.setContentDisposition(ContentDisposition.builder("attachment")
+//                        .filename(photoPath.getFileName().toString())
+//                        .build());
+//                return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
+//            } else {
+//                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//            }
+//        } catch (IOException e) {
+//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+
+//    public ResponseEntity<Resource> findPhotoById(Integer photoId) {
+//        Optional<Photo> photoOpt = photoRepository.findById(photoId);
+//        if (photoOpt.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }
+//
+//        Path photoPath = Path.of(photoOpt.get().getPhotoPath()).normalize();
+//        try {
+//            Resource resource = new UrlResource(photoPath.toUri());
+//            if (resource.exists() && resource.isReadable()) {
+//                HttpHeaders headers = new HttpHeaders();
+//                headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+//                headers.setContentDisposition(ContentDisposition.builder("attachment")
+//                        .filename(photoPath.getFileName().toString())
+//                        .build());
+//                return ResponseEntity.ok()
+//                        .headers(headers)
+//                        .body(resource);
+//            } else {
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//            }
+//        } catch (IOException e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
+
+
+
+    public ResponseEntity<Path> findPhotoById(Integer photoId) {
+        Optional<Photo> photo = photoRepository.findById(photoId);
+        if (photo.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        Optional<Photo> photo = photoRepository.findById(photoId);
-        File file = new File(photo.get().getPhotoPath());
-
-
-        return new ResponseEntity<>(file, HttpStatus.OK);
+        String photoPath = photo.get().getPhotoPath();
+        if (photoPath == null || photoPath.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // or handle accordingly
+        }
+        Path path = Path.of(photoPath).normalize();
+        return new ResponseEntity<>(path, HttpStatus.OK);
     }
 
-    public ResponseEntity<Set<File>> findPhotosByIds(List<Integer> photoIds) {
-        List<Photo> photo = photoRepository.findAllById(photoIds);
-        if(photo.isEmpty()) {
+
+
+    public ResponseEntity<Set<Path>> findPhotosByIds(List<Integer> photoIds) {
+        if (photoIds == null || photoIds.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Or an appropriate message
+        }
+
+        Set<Integer> uniquePhotoIds = new HashSet<>(photoIds);
+        List<Photo> photoList = photoRepository.findAllById(uniquePhotoIds);
+
+        if (photoList.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        Set<File> files = new HashSet<>();
 
-        Set<String> photos = photo.stream()
-                .map(Photo::getPhotoPath)
-                .collect(Collectors.toSet());
+        Set<Path> paths = new HashSet<>();
+        for (Photo photo : photoList) {
+            String photoPath = photo.getPhotoPath();
 
-        for(String photoUrl : photos){
-            files.add(new File(photoUrl));
+            if (photoPath == null || photoPath.isEmpty()) {
+                continue;
+            }
+
+            paths.add(Path.of(photoPath).normalize());
         }
 
-        return new ResponseEntity<>(files, HttpStatus.OK);
+        return new ResponseEntity<>(paths, HttpStatus.OK);
     }
 
 

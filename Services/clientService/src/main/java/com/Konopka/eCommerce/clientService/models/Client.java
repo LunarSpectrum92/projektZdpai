@@ -31,13 +31,11 @@ public class Client{
     private String surname;
 
 
-
     @Pattern(regexp = "(\\+\\d{1,3})?\\d{9}", message = "Numer telefonu musi składać się z 9 cyfr, opcjonalnie z prefiksem kraju (np. +48)")
     private String phone;
 
 
     private UUID keycloakId;
-
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -46,12 +44,6 @@ public class Client{
     @JoinColumn(name = "address_id")
     private Address address;
 
-
-
-
-
-
-
-
+    private Integer PhotoId;
 
 }
