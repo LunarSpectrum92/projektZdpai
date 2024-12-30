@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record OrderDto(
+        Integer orderId,
+
         BigDecimal totalAmount,
 
         LocalDateTime orderDate,

@@ -47,9 +47,9 @@ public class ClientController {
 
 
 
-    @GetMapping("/client")
-    public ResponseEntity<Client> getClient(@RequestBody int id) {
-        return clientService.getClientById(id);
+    @PostMapping("/client")
+    public ResponseEntity<Client> getClient(@RequestBody Integer userId) {
+        return clientService.getClientById(userId);
     }
 
 
@@ -68,11 +68,11 @@ public class ClientController {
 
 
 
-//    @GetMapping("/test")
-//    public String test() {
-//        return photoFeign.test();
-//    }
-//
+    @GetMapping("/test")
+    public String test() {
+        return "test";
+    }
+
 
 
     @GetMapping("/photo/{id}")

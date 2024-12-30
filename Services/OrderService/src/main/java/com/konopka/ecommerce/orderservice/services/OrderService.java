@@ -7,44 +7,34 @@ import com.konopka.ecommerce.orderservice.dto.OrderDto;
 import com.konopka.ecommerce.orderservice.dto.OrderDtoMapper;
 import com.konopka.ecommerce.orderservice.dto.OrderProductDto;
 import com.konopka.ecommerce.orderservice.dto.OrderRequest;
-import com.konopka.ecommerce.orderservice.models.ClientFeign;
-import com.konopka.ecommerce.orderservice.models.Order;
-import com.konopka.ecommerce.orderservice.models.OrderProduct;
-import com.konopka.ecommerce.orderservice.models.ProductFeign;
+import com.konopka.ecommerce.orderservice.kafka.OrderMessageProducer;
+import com.konopka.ecommerce.orderservice.models.*;
 import com.konopka.ecommerce.orderservice.repositories.OrderProductRepository;
 import com.konopka.ecommerce.orderservice.repositories.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class OrderService {
 
     private OrderRepository orderRepository;
     private OrderProductRepository orderProductRepository;
+    private OrderMessageProducer orderMessageProducer;
     private ClientFeign clientFeign;
     private ProductFeign productFeign;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, OrderProductRepository orderProductRepository) {
+    public OrderService(OrderRepository orderRepository,ClientFeign clientFeign,ProductFeign productFeign, OrderProductRepository orderProductRepository, OrderMessageProducer orderMessageProducer) {
         this.orderRepository = orderRepository;
+        this.clientFeign = clientFeign;
+        this.productFeign = productFeign;
         this.orderProductRepository = orderProductRepository;
+        this.orderMessageProducer = orderMessageProducer;
     }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -73,6 +63,8 @@ public class OrderService {
             }
             //count total amount
             amount = amount.add(orderProductDto.price());
+
+
             try {
                 orderProductRepository.save(OrderDtoMapper.mapOrderProductToEntity(orderProductDto));
             }catch (Exception e){
@@ -86,15 +78,30 @@ public class OrderService {
                 .clientId(String.valueOf(client.getBody().getUserId()))
                 .orderProductsList(OrderDtoMapper.mapOrderProductsToEntity(orderRequest.orderProductsList()))
                 .paymentMethods(orderRequest.paymentMethods())
+                .status(Status.WAITING_FOR_PAYMENT)
                 .build();
 
+
+
+
         try {
-            orderRepository.save(order);
+            Order savedOrder = orderRepository.save(order);
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
+        //send message to payment
+        //orderMessageProducer.produceOrderMessage(OrderDtoMapper.toDto(order));
+
         return new ResponseEntity<>(OrderDtoMapper.toDto(order), HttpStatus.CREATED);
     }
+
+
+
+
+
+
+
 
 
 }

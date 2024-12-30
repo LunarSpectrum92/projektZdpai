@@ -3,6 +3,7 @@ package com.konopka.ecommerce.orderservice.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.math.BigDecimal;
@@ -27,7 +28,7 @@ public class Order {
 
     private BigDecimal totalAmount;
 
-    @CreatedDate
+    @CreationTimestamp
     private LocalDateTime orderDate;
 
     private String clientId;
@@ -37,4 +38,11 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     private PaymentMethods paymentMethods;
+
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+
+
 }

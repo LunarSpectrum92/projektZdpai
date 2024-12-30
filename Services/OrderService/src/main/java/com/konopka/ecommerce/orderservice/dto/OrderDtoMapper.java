@@ -10,6 +10,7 @@ public class OrderDtoMapper {
 
     public static OrderDto toDto(Order order) {
         return new OrderDto(
+                order.getOrderId(),
                 order.getTotalAmount(),
                 order.getOrderDate(),
                 order.getClientId(),
