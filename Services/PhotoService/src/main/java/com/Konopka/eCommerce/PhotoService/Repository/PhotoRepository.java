@@ -1,7 +1,7 @@
 package com.Konopka.eCommerce.PhotoService.Repository;
 
 
-import com.Konopka.eCommerce.PhotoService.Models.Photo;
+import com.Konopka.eCommerce.models.Photo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

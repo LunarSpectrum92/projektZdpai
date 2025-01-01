@@ -1,23 +1,18 @@
 package com.Konopka.eCommerce.PhotoService.service;
 
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import com.Konopka.eCommerce.PhotoService.Models.Photo;
+import com.Konopka.eCommerce.models.Photo;
 import com.Konopka.eCommerce.PhotoService.Repository.PhotoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class PhotoService {
