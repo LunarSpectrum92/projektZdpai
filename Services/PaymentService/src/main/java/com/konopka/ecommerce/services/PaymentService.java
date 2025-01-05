@@ -3,6 +3,7 @@ package com.Konopka.eCommerce.services;
 
 import com.Konopka.eCommerce.DTO.PaymentDto;
 import com.Konopka.eCommerce.DTO.PaymentMapper;
+import com.Konopka.eCommerce.DTO.PaymentRequest;
 import com.Konopka.eCommerce.kafka.PaymentProducer;
 import com.Konopka.eCommerce.models.Payment;
 import com.Konopka.eCommerce.models.Status;
@@ -40,13 +41,16 @@ public class PaymentService {
 
 
 
-    public ResponseEntity<Status> payForOrder(Long orderId, BigDecimal amount) {
-        Optional<Payment> payment = paymentRepository.findByOrderId(orderId);
+    public ResponseEntity<Status> payForOrder(PaymentRequest paymentRequest) {
+        Optional<Payment> payment = paymentRepository.findByOrderId(Long.valueOf(paymentRequest.orderId()));
         if (payment.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        payment.get().setCustomerId(paymentRequest.customerId());
+        payment.get().setAmount(paymentRequest.amount());
+        payment.get().setPaymentMethod(paymentRequest.paymentMethod());
 
-        if(payment.get().getAmount().compareTo(amount) != 0) {
+        if(payment.get().getAmount().compareTo(paymentRequest.amount()) != 0) {
             payment.get().setStatus(Status.REJECTED);
             paymentRepository.save(payment.get());
             paymentProducer.produceOrderMessage(PaymentMapper.toPaymentDto(payment.get()));

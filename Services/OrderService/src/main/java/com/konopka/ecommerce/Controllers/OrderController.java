@@ -10,13 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/orders")
 public class OrderController {
 
 
     private final OrderService orderService;
-    @Autowired
-    private ClientFeign clientFeign;
 
     @Autowired
     public OrderController(OrderService orderService) {
@@ -24,12 +22,18 @@ public class OrderController {
     }
 
 
-
-
     @PostMapping("/order")
     public ResponseEntity<OrderDto> createOrder(@RequestBody OrderRequest orderRequest) {
         return orderService.createOrder(orderRequest);
     }
+
+    //TODO
+    //getallorders
+    //getorder
+    //sortorders
+    //getOrdersByClientId
+    //deleteOrder
+
 
 
 //    @GetMapping("/ordera")

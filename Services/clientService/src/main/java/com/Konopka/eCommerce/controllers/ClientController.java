@@ -9,6 +9,7 @@ import com.Konopka.eCommerce.services.ClientService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,35 +17,43 @@ import java.nio.file.Path;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/clients")
 public class ClientController {
 
     ClientService clientService;
-    private PhotoFeign photoFeign;
 
 
 
     @Autowired
     public ClientController(ClientService clientService, PhotoFeign photoFeign) {
         this.clientService = clientService;
-        this.photoFeign = photoFeign;
     }
 
 
-    @GetMapping("/getClients")
+    @GetMapping("/clients")
     public List<Client> getClients() {
         return clientService.getClients();
     }
 
 
 
-    @PostMapping("/client")
-    public ResponseEntity<Client> getClient(@RequestBody Integer userId) {
+    @GetMapping("/client/{userId}")
+    public ResponseEntity<Client> getClient(@PathVariable Integer userId) {
         return clientService.getClientById(userId);
     }
 
 
-    @PostMapping("/createClient")
+
+    @GetMapping("/test")
+    public String getClient(Authentication authentication) {
+        return authentication.getName();
+    }
+
+
+
+
+
+    @PostMapping("/client")
     public ResponseEntity<Client> createClient(@Valid @RequestBody ClientRequest client) {
         return clientService.createClient(client);
     }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/comments")
 public class CommentController {
 
 
@@ -22,7 +22,14 @@ public class CommentController {
     }
 
 
-    @PostMapping("/Comment")
+
+    @GetMapping("/test")
+    public String test() {
+        return "test";
+    }
+
+
+    @PostMapping("/comment")
     public ResponseEntity<Comment> addComment(@RequestBody Comment comment) {
         return commentService.createComment(comment);
     }

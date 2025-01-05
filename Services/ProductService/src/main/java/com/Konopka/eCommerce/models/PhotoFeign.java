@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 @FeignClient(name = "PHOTOSERVICE",
-        url = "http://localhost:9030/api",
+        url = "http://localhost:9030/api/photos",
         configuration = FeignSupportConfig.class)
 public interface PhotoFeign {
 
@@ -23,16 +23,7 @@ public interface PhotoFeign {
     ResponseEntity<Path> findPhotoById(@PathVariable int id);
 
 
-    @GetMapping("/test")
-    String test();
-
-
-
-
     @GetMapping("/photos")
     ResponseEntity<Set<Path>> findPhotosByIds(@RequestBody List<Integer> ids);
-
-
-
 
 }

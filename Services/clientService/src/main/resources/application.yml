@@ -4,7 +4,11 @@ spring:
   application:
     name: clientService
 
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "http://localhost:7080/realms/eCommerce-realm"
 
 
 

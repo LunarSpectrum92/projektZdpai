@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/products")
 public class ProductController {
 
     ProductService productService;
@@ -29,13 +29,10 @@ public class ProductController {
     }
 
 
-
-
     @GetMapping("/products")
     public List<ProductDto> GetProductsById(@RequestBody List<Integer> ids){
         return productService.GetProductsById(ids);
     }
-
 
 
     @GetMapping("/product")
@@ -43,12 +40,10 @@ public class ProductController {
         return productService.getProductById(id, quantity);
     }
 
-
     @GetMapping("/product/name")
     public Optional<ProductDto> findByName(@RequestParam String name){
         return productService.GetProductsByName(name);
     }
-
 
 
     @PostMapping("/product")
@@ -56,22 +51,14 @@ public class ProductController {
         return productService.createProduct(productDto);
     }
 
-
-
-
     @PostMapping("/product/photos")
     public ResponseEntity<Set<Integer>> createPhotos(@RequestParam("file") Set<MultipartFile> photos,@RequestParam("id") Integer id){
         return productService.addPhotos(photos, id);
     }
 
-
     @GetMapping("/product/photos")
     public ResponseEntity<Set<Path>> getPhotos(List<Integer> ids){
         return productService.getPhotos(ids);
     }
-
-
-
-
 
 }

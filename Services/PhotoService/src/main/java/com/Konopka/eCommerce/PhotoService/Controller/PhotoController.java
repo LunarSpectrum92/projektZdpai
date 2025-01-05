@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/photos")
 public class PhotoController {
 
     PhotoService photoService;
@@ -38,19 +38,9 @@ public class PhotoController {
     }
 
 
-
-
-
-
     @GetMapping("/photo/{id}")
     public ResponseEntity<Path> findPhotoById(@PathVariable int id) {
             return photoService.findPhotoById(id);
-    }
-
-
-    @GetMapping("/test")
-    public String test() {
-        return "test";
     }
 
 

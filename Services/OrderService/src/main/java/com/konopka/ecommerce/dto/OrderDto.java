@@ -16,8 +16,8 @@ public record OrderDto(
 
         String clientId,
 
-        List<OrderProductDto> orderProductsList,
+        List<OrderProductDto> orderProductsList
 
-        PaymentMethod paymentMethod
+        //PaymentMethod paymentMethod
 ) {
 }

@@ -75,7 +75,7 @@ public class OrderService {
                 .totalAmount(amount)
                 .clientId(String.valueOf(client.getBody().getUserId()))
                 .orderProductsList(OrderDtoMapper.mapOrderProductsToEntity(orderRequest.orderProductsList()))
-                .paymentMethod(orderRequest.paymentMethod())
+                //.paymentMethod(orderRequest.paymentMethod())
                 .status(Status.WAITING_FOR_PAYMENT)
                 .build();
 

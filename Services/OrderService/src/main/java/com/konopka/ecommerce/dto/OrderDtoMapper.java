@@ -15,8 +15,8 @@ public class OrderDtoMapper {
                 order.getTotalAmount(),
                 order.getOrderDate(),
                 order.getClientId(),
-                mapOrderProductsToDto(order.getOrderProductsList()),
-                order.getPaymentMethod()
+                mapOrderProductsToDto(order.getOrderProductsList())
+                //order.getPaymentMethod()
         );
     }
 
@@ -26,7 +26,7 @@ public class OrderDtoMapper {
         order.setOrderDate(orderDto.orderDate());
         order.setClientId(orderDto.clientId());
         order.setOrderProductsList(mapOrderProductsToEntity(orderDto.orderProductsList()));
-        order.setPaymentMethod(orderDto.paymentMethod());
+        //order.setPaymentMethod(orderDto.paymentMethod());
         return order;
     }
 

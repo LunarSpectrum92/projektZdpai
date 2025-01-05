@@ -1,0 +1,43 @@
+server:
+  port: 8222
+spring:
+  cloud:
+    discovery:
+      enabled: true
+      client:
+        service-url:
+          defaultZone: http://localhost:8761/eureka/
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+       - id: customerService
+         uri: lb:http://CLIENTSERVICE
+         predicates:
+           - Path=/api/clients/**
+       - id: orderService
+         uri: lb:http://ORDERSERVICE
+         predicates:
+           - Path=/api/orders/**
+       - id: ProductServiceProducts
+         uri: lb:http://PRODUCTSERVICE
+         predicates:
+           - Path=/api/products/**
+       - id: ProductServiceCategories
+         uri: lb:http://PRODUCTSERVICE
+         predicates:
+           - Path=/api/categories/**
+       - id: paymentService
+         uri: lb:http://PAYMENTSERVICE
+         predicates:
+           - Path=/api/payments/**
+       - id: CommentService
+         uri: lb:http://COMMENTSERVICE
+         predicates:
+           - Path=/api/comments/**
+       - id: photoService
+         uri: lb:http://PHOTOSERVICE
+         predicates:
+           - Path=/api/photos/**
+

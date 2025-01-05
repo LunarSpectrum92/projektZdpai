@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Path;
 
 @FeignClient(name = "PHOTOSERVICE",
-        url = "http://localhost:8761/api",
+        url = "http://localhost:8761/api/photos",
         configuration = FeignSupportConfig.class)
 public interface PhotoFeign {
 

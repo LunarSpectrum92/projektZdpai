@@ -1,6 +1,7 @@
 package com.Konopka.eCommerce.controllers;
 
 
+import com.Konopka.eCommerce.DTO.PaymentRequest;
 import com.Konopka.eCommerce.kafka.PaymentProducer;
 import com.Konopka.eCommerce.kafka.a;
 
@@ -13,12 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/payments")
 public class PaymentController {
 
     PaymentService paymentService;
-    @Autowired
-    PaymentProducer paymentProducer;
+
 
 
     public PaymentController(PaymentService paymentService) {
@@ -26,16 +26,16 @@ public class PaymentController {
     }
 
 
-    @GetMapping("/payment")
-    public ResponseEntity<Integer> getPayment(@RequestParam Long id) {
+    @GetMapping("/payment/{id}")
+    public ResponseEntity<Integer> getPayment(@PathVariable Long id) {
         return paymentService.getPaymentById(id);
     }
 
 
 
     @PostMapping("/payment")
-    public ResponseEntity<Status> payForPayment(@RequestBody Long orderId, @RequestBody BigDecimal amount) {
-        return paymentService.payForOrder(orderId, amount);
+    public ResponseEntity<Status> payForPayment(@RequestBody PaymentRequest paymentRequest) {
+        return paymentService.payForOrder(paymentRequest);
     }
 
 

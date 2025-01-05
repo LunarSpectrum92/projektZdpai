@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/addresses")
 public class AddressController {
 
     private final AddressService addressService;
@@ -24,7 +24,7 @@ public class AddressController {
 
 
 
-    @PutMapping("/updateAddress")
+    @PutMapping("/adres")
     public ResponseEntity<Address> updateAddress(@Valid @RequestBody Address address) {
         return addressService.updateAddress(address);
     }
