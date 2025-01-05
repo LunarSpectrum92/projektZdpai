@@ -23,10 +23,6 @@ public class CommentController {
 
 
 
-    @GetMapping("/test")
-    public String test() {
-        return "test";
-    }
 
 
     @PostMapping("/comment")

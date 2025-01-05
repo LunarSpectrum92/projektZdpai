@@ -1,7 +1,6 @@
 package com.Konopka.eCommerce.DTO;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 
 public record ClientDto(
@@ -9,7 +8,7 @@ public record ClientDto(
         String name,
         String surname,
         String phone,
-        UUID keycloakId,
+        String keycloakId,
         LocalDateTime createdAt,
         Integer addressId,
         Integer PhotoId

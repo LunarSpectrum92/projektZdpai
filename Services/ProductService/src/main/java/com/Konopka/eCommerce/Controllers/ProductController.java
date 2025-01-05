@@ -61,4 +61,10 @@ public class ProductController {
         return productService.getPhotos(ids);
     }
 
+
+    @GetMapping("/test")
+    public String test() {
+        return "test";
+    }
+
 }

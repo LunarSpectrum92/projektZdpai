@@ -33,7 +33,7 @@ public class Client{
     private String phone;
 
 
-    private UUID keycloakId;
+    private String keycloakId;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

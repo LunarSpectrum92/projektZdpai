@@ -9,12 +9,14 @@ import com.Konopka.eCommerce.repositories.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 
 @Service
@@ -46,11 +48,12 @@ public class ClientService {
 
 
 
-    public ResponseEntity<Client> createClient(ClientRequest clientRequest){
+    public ResponseEntity<Client> createClient(ClientRequest clientRequest, Authentication authentication){
             Client client = Client.builder()
                     .name(clientRequest.name())
                     .surname(clientRequest.surname())
                     .phone(clientRequest.phone())
+                    .keycloakId(authentication.getName())
                     .address(clientRequest.address())
                     .build();
             return new ResponseEntity<>(cr.save(client), HttpStatus.CREATED);

@@ -54,8 +54,8 @@ public class ClientController {
 
 
     @PostMapping("/client")
-    public ResponseEntity<Client> createClient(@Valid @RequestBody ClientRequest client) {
-        return clientService.createClient(client);
+    public ResponseEntity<Client> createClient(@Valid @RequestBody ClientRequest client, Authentication authentication) {
+        return clientService.createClient(client, authentication);
     }
 
 

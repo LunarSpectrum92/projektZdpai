@@ -22,6 +22,14 @@ public class OrderController {
     }
 
 
+    @GetMapping("/test")
+    public String test() {
+        return "test";
+    }
+
+
+
+
     @PostMapping("/order")
     public ResponseEntity<OrderDto> createOrder(@RequestBody OrderRequest orderRequest) {
         return orderService.createOrder(orderRequest);
