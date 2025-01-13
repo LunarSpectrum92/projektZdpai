@@ -1,50 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {  Image, Container, Row, Col, Card,Button,  Carousel, Form ,Dropdown, DropdownButton ,ButtonGroup   } from 'react-bootstrap';
 import NavBar from '../Components/NavBar.jsx'
+// @ts-ignore
 import reactLogo from '../assets/rb_3269.png'
 import Footer from '../Components/Footer.jsx';
-
+import {CartProductsContext} from '../Contexts/CartProductsContext.jsx';
+import { products } from '../assets/products.js';
 
 
 const MainPage = () => {
 
-    const cardData = [
-        {
-          id: 1,
-          title: "Card Title 1",
-          description: "This is the description for card 1.",
-          imageUrl: reactLogo,
-        },
-        {
-          id: 2,
-          title: "Card Title 2",
-          description: "This is the description for card 2.",
-          imageUrl: reactLogo,
-        },
-        {
-          id: 3,
-          title: "Card Title 3",
-          description: "This is the description for card 3.",
-          imageUrl: reactLogo,
-        },        {
-            id: 4,
-            title: "Card Title 4",
-            description: "This is the description for card 1.",
-            imageUrl: reactLogo,
-          },
-          {
-            id: 5,
-            title: "Card Title 5",
-            description: "This is the description for card 2.",
-            imageUrl: reactLogo,
-          },
-          {
-            id: 6,
-            title: "Card Title 6",
-            description: "This is the description for card 3.",
-            imageUrl: reactLogo,
-          },
-      ];
+  const {addToCart} = useContext(CartProductsContext);
+
+  const [displayProducts, setDisplayProducts] = useState([]);
+
+  useEffect(() => {
+   setDisplayProducts(products);
+  }, []);
+   
+
+  const handleAddToCart = (product) => {
+    addToCart(product);
+    alert(`${product.productName} został dodany do koszyka!`);
+  };
 
 
 
@@ -104,17 +82,21 @@ const MainPage = () => {
             <Dropdown.Item eventKey="4">Separated link</Dropdown.Item>
           </DropdownButton>
 
-        <Row className="g-3">
-        {cardData.map((card) =>
-            <Col md={4} sm={6}>
-            <Card className="h-100 shadow-sm bg-light">
-                <Card.Img variant="top" src={card.imageUrl} />
-                <Card.Body>
-                <Card.Title>{card.title}</Card.Title>
-                <Card.Text>
-                    {card.description}    
-                </Card.Text>
-                <Button variant="dark">Go somewhere</Button>
+        <Row className="g-3 ">
+        {displayProducts.map((card) =>
+            <Col md={4} sm={6} xs={6} key={card.productId}>
+            <Card className=" bg-bg-light-subtle h-100 shadow-sm " style={{border: '0px'}}>
+                <Card.Img variant="top" className='' src={reactLogo} />
+                <Card.Body className="d-flex flex-column">
+                  <Card.Title>{card.productName}</Card.Title>
+                  <Card.Text>
+                    {card.description}
+                    <br />
+                    <p><b>{card.price}</b> PLN</p>
+                  </Card.Text>
+                  <div className="mt-auto">
+                    <Button variant="outline-dark" className="w-0" onClick={() => handleAddToCart(card)}>Add to Cart</Button>
+                  </div>
                 </Card.Body>
             </Card>
             </Col>
@@ -126,9 +108,9 @@ const MainPage = () => {
       <div className="bg-secondary text-white py-5">
         <Container>
           <h2>Contact Us</h2>
-          <Form>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-             <Form.Label>Your Email address</Form.Label>
+          <Form className='w-75'>
+            <Form.Group className="mb-3 " controlId="exampleForm.ControlInput1">
+             <Form.Label></Form.Label>
              <Form.Control type="email" placeholder="name@example.com" />
            </Form.Group>
            <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">

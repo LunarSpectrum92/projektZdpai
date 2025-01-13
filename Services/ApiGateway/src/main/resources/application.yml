@@ -32,7 +32,7 @@ app:
           AuthService:
             provider: keycloak
             client-id: AuthService
-            client-secret: p2cIcD139MHOaubt2XokjPMWS7KoOlKf
+            client-secret: 36CpiQ4KLwlFXUQh46un6tqkGPmvCfFM
             authorization-grant-type: authorization_code
             redirect-uri: http://localhost:9090/login/oauth2/code/keycloak
             scope: openid

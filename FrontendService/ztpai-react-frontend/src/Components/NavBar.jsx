@@ -1,18 +1,27 @@
-import React, { useState } from 'react';
-import { Navbar, Nav, NavDropdown, Offcanvas, Form, Button } from 'react-bootstrap';
+import React, { useState,useContext, useEffect } from 'react';
+import { Navbar, Nav, NavDropdown, Offcanvas, Form, Button,Badge } from 'react-bootstrap';
+import { CartProductsContext } from '../Contexts/CartProductsContext';
+import {Link} from 'react-router-dom'
+
 
 const OffcanvasNavbar = () => {
   const [showOffcanvas, setShowOffcanvas] = useState(false);
-
-  
+  const { cart} = useContext(CartProductsContext);
+  const [cartNumber, setCartNumber] = useState(0);
   const handleOffcanvasToggle = () => setShowOffcanvas(!showOffcanvas);
+
+
+useEffect(() => {
+  setCartNumber(cart.reduce((accumulator ,prod) =>{return accumulator + prod.quantityCart } , 0))
+}, [cart])
+
 
   return (
     <Navbar expand="lg" bg="light" variant="light" sticky='top'>
       <Navbar.Brand href="#" className="ms-4">
         Brand
       </Navbar.Brand>
-      <Navbar.Toggle aria-controls="offcanvasNavbarDropdown-expand-lg" className="me-2" onClick={handleOffcanvasToggle} />
+      <Navbar.Toggle aria-controls="offcanvasNavbarDropdown-expand-lg" className="me-2 border-0" onClick={handleOffcanvasToggle} />
       <Navbar.Collapse id="offcanvasNavbarDropdown-expand-lg">
         <Navbar.Offcanvas
           id="offcanvasNavbarDropdown-expand-lg"
@@ -51,7 +60,10 @@ const OffcanvasNavbar = () => {
               <Button variant="outline-success" className="me-2">
                 Search
               </Button>
-              <Button variant="warning" className="me-1">LogIn</Button>
+              <Button variant="outline-success" className="me-1">LogIn</Button>
+              <Link to='/cart' className="me-1 w-50">
+              <Button variant="warning" className="me-1 w-100" >cart <Badge bg="secondary"  >{cartNumber} </Badge></Button>
+              </Link>
             </Form>
           </Offcanvas.Body>
         </Navbar.Offcanvas>

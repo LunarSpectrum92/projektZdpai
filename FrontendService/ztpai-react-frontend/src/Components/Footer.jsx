@@ -45,7 +45,7 @@ const Footer = () => {
                 <ul className="list-unstyled">
                   <li><a href="#" className="text-dark">FAQ</a></li>
                   <li><a href="#" className="text-dark">Shipping & Returns</a></li>
-                  <li><a href="#" className="text-dark">Size Guide</a></li>
+                  <li><a href="#" className="text-dark ">Size Guide</a></li>
                   <li><a href="#" className="text-dark">Payment Methods</a></li>
                   <li><a href="#" className="text-dark">Privacy Policy</a></li>
                   <li><a href="#" className="text-dark">Terms & Conditions</a></li>
