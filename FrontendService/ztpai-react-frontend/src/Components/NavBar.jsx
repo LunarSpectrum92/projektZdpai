@@ -62,7 +62,7 @@ useEffect(() => {
               </Button>
               <Button variant="outline-success" className="me-1">LogIn</Button>
               <Link to='/cart' className="me-1 w-50">
-              <Button variant="warning" className="me-1 w-100" >cart <Badge bg="secondary"  >{cartNumber} </Badge></Button>
+              <Button variant="warning" className="me-1 w-100" >cart {cartNumber === 0 ?  null : <Badge bg="secondary"  >{cartNumber} </Badge> }</Button>
               </Link>
             </Form>
           </Offcanvas.Body>

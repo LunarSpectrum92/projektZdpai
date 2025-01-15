@@ -5,15 +5,16 @@ import { Container, Card, Button, Badge } from 'react-bootstrap';
 import NavBar from '../Components/NavBar.jsx';
 import Footer from '../Components/Footer.jsx';
 import {CartProductsContext} from '../Contexts/CartProductsContext.jsx';
+import Timer from "../Components/Timer";
 
 const CartPage = () => {
   const { cart, addToCart, removeQuantity } = useContext(CartProductsContext);
 
 
-
   return (
     <>
       <NavBar />
+      <Timer/>
       <Container className="my-5">
         <h1>
           <Badge bg="secondary" className="my-2">

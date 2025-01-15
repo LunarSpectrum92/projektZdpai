@@ -6,7 +6,7 @@ import reactLogo from '../assets/rb_3269.png'
 import Footer from '../Components/Footer.jsx';
 import {CartProductsContext} from '../Contexts/CartProductsContext.jsx';
 import { products } from '../assets/products.js';
-
+import ContactUs from '../Components/ContactUs.jsx';
 
 const MainPage = () => {
 
@@ -20,14 +20,16 @@ const MainPage = () => {
    
 
   const handleAddToCart = (product) => {
+    alert("added to cart")
     addToCart(product);
-    alert(`${product.productName} został dodany do koszyka!`);
+
   };
 
 
 
     return (
     <>
+
         <NavBar/>    
       <div className="bg-light text-center py-5">
         <Container>
@@ -105,23 +107,7 @@ const MainPage = () => {
         </Row>
       </Container>
 
-      <div className="bg-secondary text-white py-5">
-        <Container>
-          <h2>Contact Us</h2>
-          <Form className='w-75'>
-            <Form.Group className="mb-3 " controlId="exampleForm.ControlInput1">
-             <Form.Label></Form.Label>
-             <Form.Control type="email" placeholder="name@example.com" />
-           </Form.Group>
-           <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-             <Form.Control as="textarea"  placeholder='Description' rows={3} />
-           </Form.Group>
-         </Form>
-          <Button variant="dark" size="lg" href="#contact">
-            Contact Us
-          </Button>
-        </Container>
-      </div>
+      <ContactUs/>
 
         <Footer/>
     </>
