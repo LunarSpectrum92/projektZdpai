@@ -38,7 +38,8 @@ public class ProductDtoMapper implements Function<Product, ProductDto> {
                                 Category::getCategoryId
                         )
                         .collect(Collectors.toList()),
-                product.getDiscount()
+                product.getDiscount(),
+                product.getPhotoIds()
                 );
     }
 }

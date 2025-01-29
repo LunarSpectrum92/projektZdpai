@@ -44,12 +44,20 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_HEALTH_ENABLED: "true"
       KC_LOG_LEVEL: info
+      KAFKA_BOOTSTRAP_SERVERS: ms_kafka:9092
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:7080/health/ready"]
       interval: 15s
       timeout: 2s
       retries: 15
-    command: ["start-dev", "--http-port", "7080", "--https-port", "7443"]
+    command:
+      - "start-dev"
+      - "--http-port"
+      - "7080"
+      - "--https-port"
+      - "7443"
+      - "--spi-theme-selector-my-theme-selector-enabled=true"
+      - "--spi-theme-selector-my-theme-selector-theme=my-theme"
     ports:
       - "7080:7080"
       - "7443:7443"
@@ -57,8 +65,10 @@ services:
       - net-microservice
     depends_on:
       - keyCloackDb
+      - kafka
     restart: always
-
+    volumes:
+      - ./providers:/opt/keycloak/providers
 
 
   productDb:
@@ -181,6 +191,7 @@ services:
     container_name: ms_kafka
     ports:
       - "9092:9092"
+      - "9093:9093"
     depends_on:
       - zookeeper
     environment:
@@ -188,8 +199,9 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://ms_kafka:9092,EXTERNAL://localhost:9093
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
     networks:
       - net-microservice
 

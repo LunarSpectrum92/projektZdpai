@@ -1,6 +1,9 @@
 package com.Konopka.eCommerce.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,6 +18,7 @@ import java.util.List;
 @ToString
 @Builder
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "productId")
 public class Product {
 
     @Id
@@ -26,7 +30,6 @@ public class Product {
     private String description;
 
     private String brand;
-
 
     private double price;
 

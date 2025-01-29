@@ -17,7 +17,7 @@ spring:
     database: postgresql
     show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   cloud:
     openfeign:
@@ -34,3 +34,11 @@ spring:
 
 
 
+  kafka:
+    bootstrap-servers: localhost:9093
+    consumer:
+      group-id: user-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        spring.json.trusted.packages: '*'

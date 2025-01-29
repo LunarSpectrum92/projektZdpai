@@ -29,37 +29,34 @@ public class ClientController {
         this.clientService = clientService;
     }
 
-
+    //get all clients
     @GetMapping("/clients")
     public List<Client> getClients() {
         return clientService.getClients();
     }
 
 
-
+    //get client by id
     @GetMapping("/client/{userId}")
     public ResponseEntity<Client> getClient(@PathVariable Integer userId) {
         return clientService.getClientById(userId);
     }
 
 
-
-    @GetMapping("/test")
-    public String getClient(Authentication authentication) {
-        return authentication.getName();
+    @GetMapping("/client/keycloak/{keycloakId}")
+    public ResponseEntity<Client> getClientByKeycloakId(@PathVariable String keycloakId) {
+        return clientService.getClientByKeycloakId(keycloakId);
     }
 
 
-
-
-
+    //create client
     @PostMapping("/client")
     public ResponseEntity<Client> createClient(@Valid @RequestBody ClientRequest client, Authentication authentication) {
         return clientService.createClient(client, authentication);
     }
 
 
-
+    //add avatar
     //value = "/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     @PostMapping("/client/photo")
     public ResponseEntity<Photo> addAvatar(@RequestParam("id") int id,@RequestParam("file") @Valid MultipartFile photo) {
@@ -67,13 +64,25 @@ public class ClientController {
     }
 
 
+    // get photo from client
     @GetMapping("/client/photo/{id}")
     public ResponseEntity<Path> findPhotoById(@PathVariable int id){
         return clientService.findAvatarById(id);
     }
 
 
+    //update client
+    @PutMapping("/client")
+    public ResponseEntity<Client> updateClient(@Valid @RequestBody ClientRequest client, Authentication authentication) {
+        return clientService.updateClientData(client, authentication);
+    }
 
+
+    //remove client
+    @DeleteMapping("/client")
+    public ResponseEntity<Client> deleteClient(@RequestBody String clientKeycloakId) {
+        return clientService.deleteClientByKeycloakId(clientKeycloakId);
+    }
 
 
 }

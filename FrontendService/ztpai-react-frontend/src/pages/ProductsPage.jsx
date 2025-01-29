@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import {
   Image,
+  Spinner,
   Container,
   Row,
   Col,
@@ -9,27 +10,60 @@ import {
   Dropdown,
   DropdownButton,
   ButtonGroup,
-  Form,
 } from "react-bootstrap";
 import NavBar from "../Components/NavBar.jsx";
-// @ts-ignore
 import reactLogo from "../assets/rb_3269.png";
 import Footer from "../Components/Footer.jsx";
 import { CartProductsContext } from "../Contexts/CartProductsContext.jsx";
-import { products } from "../assets/products.js";
 import PaginationProducts from "../Components/PaginationProducts.jsx";
+import useGetFetch from "../hooks/useGetFetch.jsx";
+import { Link } from "react-router-dom";
 
-const MainPage = () => {
+
+
+
+const MainPage = ({ token, url }) => {
+
+
+  const defaultUrl = "http://localhost:8222/api/products/product/all";
+  const [finalUrl, setFinalUrl] = useState(defaultUrl);
+
+
+
+
+
+  useEffect(() => {
+    if (url) setFinalUrl(url);
+  }, [url]);
+
+  const { data: products, loading, error } = useGetFetch(finalUrl, token);
+  const { data: brands, loadingBrands, errorBrands } = useGetFetch(
+    "http://localhost:8222/api/products/products/brand",
+    token
+  );
+  const { data: categories, loadingCategories, errorCategories } = useGetFetch(
+    "http://localhost:8222/api/categories/categories",
+    token
+  );
+
+
   const { addToCart } = useContext(CartProductsContext);
-
-  // Ustawienie początkowego stanu
   const [state, setState] = useState({
-    data: products, // Wszystkie produkty
-    limit: 9, // Liczba produktów na stronę
-    activePage: 1, // Aktywna strona
+    data: [],
+    limit: 9,
+    activePage: 1,
   });
+  const [addedToCart, setAddedToCart] = useState({});
 
-  // Funkcja do zmiany strony
+  useEffect(() => {
+    if (products) {
+      setState((prev) => ({
+        ...prev,
+        data: products,
+      }));
+    }
+  }, [products]);
+
   const handlePageChange = (pageNumber) => {
     setState((prev) => ({
       ...prev,
@@ -37,13 +71,47 @@ const MainPage = () => {
     }));
   };
 
-  // Funkcja do obsługi dodawania do koszyka
+  const handleBrandFiltering = (brand) => {
+    if(brand === "All"){
+      setFinalUrl(
+        `http://localhost:8222/api/products/product/all`
+      );
+
+      return
+    }
+    setFinalUrl(
+      `http://localhost:8222/api/products/product/brand?brand=${encodeURIComponent(brand)}`
+    );
+  };
+
+
+  const handleCategoryFiltering = (categoryId) => {
+    if(categoryId === "All"){
+      setFinalUrl(
+        `http://localhost:8222/api/products/product/all`
+      );
+
+      return
+    }
+    setFinalUrl(
+      `http://localhost:8222/api/products/product/category?categoryId=${encodeURIComponent(categoryId)}`
+    );
+  };
+
+
+
+
+
+
+
+
+
   const handleAddToCart = (product) => {
     addToCart(product);
+    setAddedToCart((prev) => ({ ...prev, [product.productId]: true }));
     alert(`${product.productName} został dodany do koszyka!`);
   };
 
-  // Obliczenie produktów wyświetlanych na aktualnej stronie
   const indexOfLastProduct = state.activePage * state.limit;
   const indexOfFirstProduct = indexOfLastProduct - state.limit;
   const displayProducts = state.data.slice(indexOfFirstProduct, indexOfLastProduct);
@@ -51,132 +119,124 @@ const MainPage = () => {
   return (
     <>
       <NavBar />
-
-      <Container className="my-5 ">
+      <Container className="my-5">
         <h2 className="mb-4">Trending</h2>
-        {/* Filtry */}
-        <DropdownButton
-          as={ButtonGroup}
-          variant="outline-dark"
-          title="categories"
-          className="mb-4 me-2"
-        >
-          <Dropdown.Item eventKey="1">Action</Dropdown.Item>
-          <Dropdown.Item eventKey="2">Another action</Dropdown.Item>
-          <Dropdown.Item eventKey="3" active>
-            Active Item
-          </Dropdown.Item>
-          <Dropdown.Divider />
-          <Dropdown.Item eventKey="4">Separated link</Dropdown.Item>
-        </DropdownButton>
-        <DropdownButton
-          as={ButtonGroup}
-          variant="outline-dark"
-          title="brands"
-          className="mb-4 me-2"
-        >
-          <Dropdown.Item eventKey="1">Action</Dropdown.Item>
-          <Dropdown.Item eventKey="2">Another action</Dropdown.Item>
-          <Dropdown.Item eventKey="3" active>
-            Active Item
-          </Dropdown.Item>
-          <Dropdown.Divider />
-          <Dropdown.Item eventKey="4">Separated link</Dropdown.Item>
-        </DropdownButton>
-        <DropdownButton
-          as={ButtonGroup}
-          variant="outline-dark"
-          title="trending"
-          className="mb-4 me-2"
-        >
-          <Dropdown.Item eventKey="1">Action</Dropdown.Item>
-          <Dropdown.Item eventKey="2">Another action</Dropdown.Item>
-          <Dropdown.Item eventKey="3" active>
-            Active Item
-          </Dropdown.Item>
-          <Dropdown.Divider />
-          <Dropdown.Item eventKey="4">Separated link</Dropdown.Item>
-        </DropdownButton>
-        <DropdownButton
-          as={ButtonGroup}
-          variant="outline-dark"
-          title="price"
-          className="mb-4 me-2"
-        >
-          <Dropdown.Item eventKey="1">Action</Dropdown.Item>
-          <Dropdown.Item eventKey="2">Another action</Dropdown.Item>
-          <Dropdown.Item eventKey="3" active>
-            Active Item
-          </Dropdown.Item>
-          <Dropdown.Divider />
-          <Dropdown.Item eventKey="4">Separated link</Dropdown.Item>
-        </DropdownButton>
 
-        {/* Produkty */}
-        <Row className="g-3 mb-2">
-          {displayProducts.map((product) => (
-            <Col md={4} sm={6} xs={6} key={product.productId}>
-              <Card
-                className="bg-bg-light-subtle h-100 shadow-sm"
-                style={{ border: "0px" }}
-              >
-                <Card.Img variant="top" src={reactLogo} />
-                <Card.Body className="d-flex flex-column">
-                  <Card.Title>{product.productName}</Card.Title>
-                  <Card.Text>
-                    {product.description}
-                    <br />
-                    <p>
-                      <b>{product.price}</b> PLN
-                    </p>
-                  </Card.Text>
-                  <div className="mt-auto">
-                    <Button
-                      variant="outline-dark"
-                      className="w-0"
-                      onClick={() => handleAddToCart(product)}
-                    >
-                      Add to Cart
-                    </Button>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
-        </Row>
+        {loadingBrands ? (
+          <Spinner animation="border" />
+        ) : errorBrands ? (
+          <p>Błąd ładowania marek: {errorBrands}</p>
+        ) : (
 
-        {/* Paginacja */}
+          <DropdownButton
+            as={ButtonGroup}
+            variant="outline-dark"
+            title="brands"
+            className="mb-4 me-2"
+            onSelect={handleBrandFiltering}
+          >
+            <Dropdown.Item eventKey="All">
+                All  
+              </Dropdown.Item>
+            {brands && brands.length > 0 ? (
+              brands.map((brand) => (
+                <Dropdown.Item key={brand} eventKey={brand}>
+                  {brand}
+                </Dropdown.Item>
+              ))
+            ) : (
+              <Dropdown.Item disabled>No brands available</Dropdown.Item>
+            )}
+          </DropdownButton>
+        )}
+
+
+  
+
+      {loadingCategories ? (
+          <Spinner animation="border" />
+        ) : errorCategories ? (
+          <p>Błąd ładowania kategorii: {errorCategories}</p>
+        ) : (
+          <DropdownButton
+            as={ButtonGroup}
+            variant="outline-dark"
+            title="categories"
+            className="mb-4 me-2"
+            onSelect={handleCategoryFiltering}   
+          >
+              <Dropdown.Item eventKey="All">
+                All  
+              </Dropdown.Item>
+            {categories && categories.length > 0 ? (
+              categories.map((category) => (
+                <Dropdown.Item key={category.categoryId} eventKey={category.categoryId}>
+                  {category.categoryName}
+                </Dropdown.Item>
+              ))
+
+            ) : (
+              <Dropdown.Item disabled>No categories available</Dropdown.Item>
+            )}
+
+          </DropdownButton>
+        )
+        
+        }
+              
+
+        {loading ? (
+          <Spinner animation="border" />
+        ) : error ? (
+          <p>Błąd: {error}</p>
+        ) : (
+          <Row className="g-3 mb-2">
+            {displayProducts.map((product) => (
+              
+              <Col md={4} sm={6} xs={6} key={product.productId}>
+              <Link  to={{
+                          pathname: `/product/${product.productId}`                          
+                        }}>
+
+                <Card
+                  className="bg-bg-light-subtle h-100 shadow-sm"
+                  style={{ border: "0px" }}
+                >
+                  <Card.Img variant="top" src={product.imageUrl || reactLogo} />
+                  <Card.Body className="d-flex flex-column">
+                    <Card.Title>{product.productName}</Card.Title>
+                    <Card.Text>
+                      {product.description}
+                      <br />
+                      <p>
+                        <b>{product.price}</b> PLN
+                      </p>
+                    </Card.Text>
+                    <div className="mt-auto">
+                      <Button
+                        variant="outline-dark"
+                        disabled={addedToCart[product.productId]}
+                        onClick={() => handleAddToCart(product)}
+                      >
+                        {addedToCart[product.productId] ? "Dodano" : "Dodaj do koszyka"}
+                      </Button>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Link>
+
+              </Col>
+
+            ))}
+          </Row>
+        )}
+
         <PaginationProducts
           paginationNumber={Math.ceil(state.data.length / state.limit)}
           activePage={state.activePage}
           onPageChange={handlePageChange}
         />
       </Container>
-
-      <div className="bg-secondary text-white py-5">
-        <Container>
-          <h2>Contact Us</h2>
-          <Form className="w-75">
-            <Form.Group
-              className="mb-3 "
-              controlId="exampleForm.ControlInput1"
-            >
-              <Form.Label></Form.Label>
-              <Form.Control type="email" placeholder="name@example.com" />
-            </Form.Group>
-            <Form.Group
-              className="mb-3"
-              controlId="exampleForm.ControlTextarea1"
-            >
-              <Form.Control as="textarea" placeholder="Description" rows={3} />
-            </Form.Group>
-          </Form>
-          <Button variant="dark" size="lg" href="#contact">
-            Contact Us
-          </Button>
-        </Container>
-      </div>
-
       <Footer />
     </>
   );

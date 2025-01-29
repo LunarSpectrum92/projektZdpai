@@ -1,51 +1,85 @@
-import React, { useState, useContext, useEffect } from 'react';
-import NavBar from '../Components/NavBar.jsx';
-// @ts-ignore
-import reactLogo from '../assets/rb_3269.png';
-import Footer from '../Components/Footer.jsx';
-import { Form, Button, Col, Row, Nav, Tab, Accordion, ListGroup, Card } from "react-bootstrap";
-import AddressForm from '../Components/AddressForm.jsx';
-import { User, MapPin, ShoppingBag } from 'lucide-react'; // Import icons
+import React, { useState, useEffect } from 'react';
+import NavBar from '../Components/NavBar';
+import Footer from '../Components/Footer';
+import { Spinner, Col, Row, Nav, Tab, Accordion, ListGroup, Card } from "react-bootstrap";
+import AddressForm from '../Components/AddressForm';
+import { User, MapPin, ShoppingBag } from 'lucide-react';
+import useGetFetch from "../hooks/useGetFetch";
 
-const AccontPage = () => {
+const AccountPage = ({ token, client }) => {
+    const [keycloakClientData, setKeycloakClientData] = useState(null);
+    const [clientData, setClientData] = useState(null);
+    const [error, setError] = useState(null);
 
-    const client = {
-        "userId": 1,
-        "name": "Jan",
-        "surname": "Kowalski",
-        "phone": "+48123456789",
-        "keycloakId": "a1b2c3d4-e5f6-7890-1234-56789abcdefg",
-        "createdAt": "2025-01-14T12:34:56",
-        "address": {
-            "country": "Polska",
-            "city": "Warszawa",
-            "street": "Kwiatowa",
-            "houseNumber": "12",
-            "flatNumber": "5",
-            "postalCode": "00-123"
-        },
-        "photoId": 101
+    const { data, loading, error: fetchError } = useGetFetch(
+        keycloakClientData?.sub 
+            ? `http://localhost:8222/api/clients/client/keycloak/${encodeURIComponent(keycloakClientData.sub)}`
+            : null,
+        token
+    );
+    
+    useEffect(() => {
+        if (token && client?.idTokenParsed) {
+            setKeycloakClientData(client.idTokenParsed);
+        }
+    }, [token, client]);
+
+    useEffect(() => {
+        if (fetchError) {
+            setError(fetchError);
+        }
+        if (data) {
+            setClientData(data);
+        }
+    }, [data, fetchError]);
+
+    if (loading || !clientData) {
+        return (
+            <div className="d-flex justify-content-center align-items-center min-vh-100">
+                <Spinner animation="border" />
+            </div>
+        );
     }
+
+    if (error) {
+        return (
+            <div className="alert alert-danger m-5" role="alert">
+                Error loading data: {error}
+            </div>
+        );
+    }
+
+    const address = clientData.address || {};
+    
+    const addressFields = [
+        { label: 'Phone', value: clientData.phone },
+        { label: 'Country', value: address.country },
+        { label: 'City', value: address.city },
+        { label: 'Street', value: address.street },
+        { label: 'House Number', value: address.houseNumber },
+        { label: 'Flat Number', value: address.flatNumber },
+        { label: 'Postal Code', value: address.postalCode },
+    ];
 
     return (
         <>
             <NavBar />
-            <Tab.Container id="left-tabs-example" defaultActiveKey="first">
+            <Tab.Container id="account-tabs" defaultActiveKey="address">
                 <Row className="mx-5 my-5">
                     <Col sm={3}>
                         <Nav variant="pills" className="flex-column">
                             <Nav.Item>
-                                <Nav.Link eventKey="first" className="mb-2">
+                                <Nav.Link eventKey="address" className="mb-2">
                                     <MapPin size={18} className="me-2" /> Address Data
                                 </Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="second" className="mb-2">
+                                <Nav.Link eventKey="account" className="mb-2">
                                     <User size={18} className="me-2" /> Account
                                 </Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="third" className="mb-2">
+                                <Nav.Link eventKey="orders" className="mb-2">
                                     <ShoppingBag size={18} className="me-2" /> My Orders
                                 </Nav.Link>
                             </Nav.Item>
@@ -53,42 +87,43 @@ const AccontPage = () => {
                     </Col>
                     <Col sm={9} xs={12} md={6} lg={6}>
                         <Tab.Content>
-                            <Tab.Pane eventKey="first">
-                                <h3>Your data</h3>
-                                <Card className='my-3'>
+                            <Tab.Pane eventKey="address">
+                                <h4>Your Data</h4>
+                                <Card className="my-3">
                                     <ListGroup variant="flush">
-                                        <ListGroup.Item><strong>Telefon:</strong> {client.phone}</ListGroup.Item>
-                                        <ListGroup.Item><strong>Kraj:</strong> {client.address.country}</ListGroup.Item>
-                                        <ListGroup.Item><strong>Miasto:</strong> {client.address.city}</ListGroup.Item>
-                                        <ListGroup.Item><strong>Ulica:</strong> {client.address.street}</ListGroup.Item>
-                                        <ListGroup.Item><strong>Nr domu:</strong> {client.address.houseNumber}</ListGroup.Item>
-                                        <ListGroup.Item><strong>Nr mieszkania:</strong> {client.address.flatNumber}</ListGroup.Item>
-                                        <ListGroup.Item><strong>Kod pocztowy:</strong> {client.address.postalCode}</ListGroup.Item>
+                                        {addressFields.map(({ label, value }) => (
+                                            <ListGroup.Item key={label}>
+                                                <strong>{label}:</strong> {value || 'Not provided'}
+                                            </ListGroup.Item>
+                                        ))}
                                     </ListGroup>
                                 </Card>
                                 <Accordion>
-                                    <Accordion.Item eventKey="1">
-                                        <Accordion.Header>Change data</Accordion.Header>
+                                    <Accordion.Item eventKey="0">
+                                        <Accordion.Header>Change Data</Accordion.Header>
                                         <Accordion.Body>
-                                            <AddressForm />
+                                            <AddressForm token={token} />
                                         </Accordion.Body>
                                     </Accordion.Item>
                                 </Accordion>
                             </Tab.Pane>
-                            <Tab.Pane eventKey="second">
-                                <a href="http://localhost:7080/realms/eCommerce-realm/account">redirect to my account</a>
+                            <Tab.Pane eventKey="account">
+                                <a href="http://localhost:7080/realms/eCommerce-realm/account" 
+                                   className="btn btn-primary">
+                                    Go to My Account
+                                </a>
                             </Tab.Pane>
-                            <Tab.Pane eventKey="third">
-                                <p>moje zamowienia</p>
+                            <Tab.Pane eventKey="orders">
+                                <h4>My Orders</h4>
+                                <p>Orders history will be displayed here</p>
                             </Tab.Pane>
                         </Tab.Content>
                     </Col>
                 </Row>
             </Tab.Container>
-
             <Footer />
         </>
     );
 };
 
-export default AccontPage;
+export default AccountPage;

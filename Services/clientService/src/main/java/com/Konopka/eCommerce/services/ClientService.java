@@ -1,11 +1,13 @@
 package com.Konopka.eCommerce.services;
 
+import com.Konopka.eCommerce.DTO.ClientUpdateRequest;
 import com.Konopka.eCommerce.models.Photo;
 import com.Konopka.eCommerce.DTO.ClientRequest;
 import com.Konopka.eCommerce.models.Client;
 import com.Konopka.eCommerce.models.PhotoFeign;
 import com.Konopka.eCommerce.repositories.AddressRepository;
 import com.Konopka.eCommerce.repositories.ClientRepository;
+import org.hibernate.engine.spi.Resolution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,9 +51,13 @@ public class ClientService {
 
 
     public ResponseEntity<Client> createClient(ClientRequest clientRequest, Authentication authentication){
-            Client client = Client.builder()
-                    .name(clientRequest.name())
-                    .surname(clientRequest.surname())
+        System.out.println(
+                authentication
+
+        );
+        Client client = Client.builder()
+                    //.name(clientRequest.name())
+                    //.surname(clientRequest.surname())
                     .phone(clientRequest.phone())
                     .keycloakId(authentication.getName())
                     .address(clientRequest.address())
@@ -92,8 +98,36 @@ public class ClientService {
     }
 
 
+    public ResponseEntity<Client> updateClientData(ClientRequest clientRequest, Authentication authentication){
+        Optional<Client> client = cr.findByKeycloakId(authentication.getName());
+        if(client.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        System.out.println(client);
+
+        client.get().setAddress(clientRequest.address());
+        client.get().setPhone(clientRequest.phone());
+
+        return new ResponseEntity<>(cr.save(client.get()), HttpStatus.CREATED);
+    }
+
+
+    public ResponseEntity<Client> deleteClientByKeycloakId(String KeycloakId){
+        Optional<Client> client = cr.findByKeycloakId(KeycloakId);
+        if(client.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
 
 
+        cr.delete(client.get());
+        return new ResponseEntity<>(client.get(), HttpStatus.OK);
+    }
+
+
+    public ResponseEntity<Client> getClientByKeycloakId(String KeycloakId){
+        Optional<Client> client = cr.findByKeycloakId(KeycloakId);
+        return client.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 
 }

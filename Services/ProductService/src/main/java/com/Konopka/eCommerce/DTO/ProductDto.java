@@ -10,6 +10,7 @@ public record ProductDto (
         Double price,
         Integer quantity,
         List<Integer> category,
-        Integer discount
+        Integer discount,
+        List<Integer> photoIds
 ) {
 }

@@ -8,7 +8,8 @@ import {CartProductsContext} from '../Contexts/CartProductsContext.jsx';
 import { products } from '../assets/products.js';
 import ContactUs from '../Components/ContactUs.jsx';
 
-const MainPage = () => {
+const MainPage = ({token}) => {
+
 
   const {addToCart} = useContext(CartProductsContext);
 

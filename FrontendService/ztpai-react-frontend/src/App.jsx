@@ -10,17 +10,20 @@ import React from 'react';
 import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 import AccontPage from './pages/AccontPage.jsx';
 import AboutUs from './pages/AboutUs.jsx';
+import AdminPage from './pages/AdminPage.jsx';
+
 
 
 const App = () => {
 
 
-  const [isLogin, token] = useAuth();
+const [client, isLogin, token] = useAuth();
+
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element:  <MainPage /> ,
+    element:  <MainPage token={token} /> ,
     errorElement: <ErrorPage/>,
   },
   {
@@ -33,16 +36,19 @@ const router = createBrowserRouter([
   },
   {
     path: '/product/:productId',
-    element: <ProductPage />
+    element: <ProductPage token={token}/>
   },{
     path: '/products', 
-    element: <ProductsPage />
+    element: <ProductsPage token={token}/>
   },{
     path: '/account',
-    element: <AccontPage />
+    element: <AccontPage token={token} client={client}/>
   },{
     path: "/about",
     element: <AboutUs/>
+  },{
+    path: "/admin",
+    element: <AdminPage token={token}/>
   }
 ])  
 

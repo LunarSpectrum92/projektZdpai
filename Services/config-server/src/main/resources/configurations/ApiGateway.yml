@@ -7,10 +7,20 @@ spring:
       client:
         service-url:
           defaultZone: http://localhost:8761/eureka/
+
     gateway:
+
+
+
       discovery:
         locator:
           enabled: true
+
+
+
+
+
+
       routes:
        - id: customerService
          uri: lb:http://CLIENTSERVICE
@@ -40,4 +50,3 @@ spring:
          uri: lb:http://PHOTOSERVICE
          predicates:
            - Path=/api/photos/**
-

@@ -13,7 +13,6 @@ const AboutUs = () => {
               <h1 className="mb-5">About Us</h1>
 
               <div className="row">
-                  {/* Left section: Contact and Locations */}
                   <div className="col-md-6 mb-4">
                       <div className="p-4 bg-white shadow rounded">
                           <h5>Contact:</h5>
@@ -26,7 +25,6 @@ const AboutUs = () => {
                       </div>
                   </div>
 
-                  {/* Right section: Map placeholder */}
                   <div className="col-md-6 mb-4">
                       <div
                           className="p-4 bg-white shadow rounded d-flex align-items-center justify-content-center"

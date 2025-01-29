@@ -14,6 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -56,7 +60,7 @@ public class OrderService {
             var product = productFeign.findById(orderProductDto.productId(), orderProductDto.quantity());
             if(product.isEmpty()){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .header("Error-Message", "Order not found")
+                        .header("Error-Message", "Product not found")
                         .build();
             }
             //count total amount
@@ -95,11 +99,44 @@ public class OrderService {
     }
 
 
+    //TODO
+    //deleteOrder
 
 
 
+    //getorder
+    public ResponseEntity<OrderDto> getOrder(Integer orderId) {
+        Optional<Order> order = orderRepository.findById(orderId);
+        return order.map(value -> new ResponseEntity<>(OrderDtoMapper.toDto(value), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 
+    //getallorders
+    public ResponseEntity<List<OrderDto>> getAllOrders() {
+        List<Order> orders = orderRepository.findAll();
+        if(orders.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        List<OrderDto> orderDtos = orders.stream()
+                .sorted(Comparator.comparing(Order::getOrderDate))
+                .map(OrderDtoMapper::toDto)
+                .toList();
 
+        return new ResponseEntity<>(orderDtos,  HttpStatus.OK);
+    }
+
+    //getOrdersByClientId
+    public ResponseEntity<List<OrderDto>> getOrdersByClientId(String clientId) {
+        List<Order> orders = orderRepository.findAllByClientId(clientId);
+        if(orders.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        List<OrderDto> orderDtos = orders.stream()
+                .sorted(Comparator.comparing(Order::getOrderDate))
+                .map(OrderDtoMapper::toDto)
+                .toList();
+
+        return new ResponseEntity<>(orderDtos,  HttpStatus.OK);
+    }
 
 
 }

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Form, Button, Col, Row } from "react-bootstrap";
+import usePutFetch from "../hooks/usePutFetch.jsx";
 
-const AddressForm = () => {
+const AddressForm = ({ token }) => {
   const [formData, setFormData] = useState({
     country: "",
     city: "",
@@ -12,7 +13,27 @@ const AddressForm = () => {
     phone: "",
   });
 
+  const [jsonToSend, setJsonToSend] = useState({});
   const [errors, setErrors] = useState({});
+
+  const { data: response, loading, error, sendRequest } = usePutFetch(
+    `http://localhost:8222/api/clients/client`,
+    token
+  );
+
+  const createJsonToSend = (data) => {
+    return {
+      phone: data.phone,
+      address: {
+        country: data.country,
+        city: data.city,
+        street: data.street,
+        houseNumber: data.houseNumber,
+        flatNumber: data.flatNumber,
+        postalCode: data.postalCode,
+      },
+    };
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,7 +42,7 @@ const AddressForm = () => {
       [name]: value,
     });
 
-    setErrors((prev) => ({ ...prev, [name]: "" }));
+    setErrors((prev) => ({ ...prev, [name]: "" })); 
   };
 
   const validate = () => {
@@ -52,9 +73,11 @@ const AddressForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (validate()) {
-      console.log("Form submitted:", formData);
-      alert("Formularz został poprawnie przesłany!");
+      const json = createJsonToSend(formData); 
+      setJsonToSend(json);
+      sendRequest(json);
     }
   };
 
@@ -146,9 +169,12 @@ const AddressForm = () => {
         <Form.Control.Feedback type="invalid">{errors.phone}</Form.Control.Feedback>
       </Form.Group>
 
-      <Button variant="primary" type="submit">
-        Wyślij
+      <Button variant="primary" type="submit" disabled={loading}>
+        {loading ? "Wysyłanie..." : "Wyślij"}
       </Button>
+
+      {error && <p className="text-danger mt-2">{error}</p>}
+      {response && <p className="text-success mt-2">Dane zostały zapisane!</p>}
     </Form>
   );
 };

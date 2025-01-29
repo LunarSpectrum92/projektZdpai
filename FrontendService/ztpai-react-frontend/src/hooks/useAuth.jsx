@@ -28,10 +28,10 @@ const client = new Keycloak({
         .then((res) => {
           setLogin(res);
           setToken(client.token);
-          console.log(client.idTokenParsed);
+          //console.log(client.idTokenParsed);
         });
     }, []);
   
-    return [isLogin, token];
+    return [client, isLogin, token];
   };
 export default useAuth;

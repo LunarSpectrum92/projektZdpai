@@ -12,43 +12,64 @@ import {
 } from 'react-bootstrap';
 import NavBar from '../Components/NavBar.jsx';
 import Footer from '../Components/Footer.jsx';
-import { products } from '../assets/products.js';
 import reactLogo from '../assets/rb_3269.png'
 import { useNavigate } from "react-router-dom";
+import useGetFetch from "../hooks/useGetFetch.jsx";
 
+const ProductPage = ({ token, url }) => {
 
-
-const ProductPage = () => {
     const productId = useParams();
     let navigate = useNavigate();
 
 
 
+    const [products, setProducts] = useState(null);
 
+  
+
+    const { data: productsFirst, loading, error } = useGetFetch("http://localhost:8222/api/products/product/all", token);
     
+
+
+
 
     const [reviews, setReviews] = useState([
     { name: 'Reviewer name', title: 'sdf', body: 'Review Body', date: new Date().toLocaleDateString(), rating: 2 },
     { name: 'Reviewer name', title: 'asd', body: 'Review Body', date: new Date().toLocaleDateString(), rating: 4 },
   ]);
 
+
+
+
+  
   const [newReview, setNewReview] = useState({ name: '', title: '', body: '', rating: 0 });
   const [product, setProduct] = useState({});
 
-
   useEffect(() => {
-    const filteredProduct = products.filter((product1) => product1.productId === parseInt(productId.productId));
-        
-
+    console.log("productsFirst:", productsFirst);
+  
+    if (!productsFirst || productsFirst.length === 0) return; 
+  
+    setProducts(productsFirst); 
+  }, [productsFirst]);
+  
+  useEffect(() => {
+    if (!products || products.length === 0) return;
+  
+    console.log("products:", products);
+  
+    const filteredProduct = products.filter(
+      (product1) => product1.productId === parseInt(productId.productId)
+    );
+  
     if (filteredProduct.length === 0) {
       navigate("/error", { replace: true });
       return;
     }
-
+  
     setProduct(filteredProduct[0]);
-
-    console.log("Znaleziony produkt:", filteredProduct[0]);
-  }, []);
+  }, [products]);
+  
 
 
 
