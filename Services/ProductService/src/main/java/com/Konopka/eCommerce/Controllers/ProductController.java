@@ -1,8 +1,10 @@
 package com.Konopka.eCommerce.Controllers;
 
 
+import com.Konopka.eCommerce.DTO.CreateProductDto;
 import com.Konopka.eCommerce.DTO.PhotoDto;
 import com.Konopka.eCommerce.DTO.ProductDto;
+import com.Konopka.eCommerce.DTO.ProductResponse;
 import com.Konopka.eCommerce.models.Category;
 import com.Konopka.eCommerce.models.PhotoFeign;
 import com.Konopka.eCommerce.models.Product;
@@ -55,9 +57,14 @@ public class ProductController {
     }
 
     //create product
-    @PostMapping("/product")
-    public ResponseEntity<Product> createProduct(@RequestBody ProductDto productDto){
-        return productService.createProduct(productDto);
+    @PostMapping(value = "/product", consumes = "multipart/form-data")
+    public ResponseEntity<Product> createProduct(
+            @RequestPart("data") ProductDto productDto,
+            @RequestPart("photoS") Set<MultipartFile> photo
+    ){
+        System.out.println("ashdasasdasdhdasdhas");
+
+        return productService.createProduct(productDto, photo);
     }
     //add product photo
     @PostMapping("/product/photos")
@@ -67,7 +74,7 @@ public class ProductController {
 
     //get product photo
     @GetMapping("/product/photos")
-    public ResponseEntity<Set<Path>> getPhotos(List<Integer> ids){
+    public ResponseEntity<Set<Path>> getPhotos(@RequestParam List<Integer> ids){
         return productService.getPhotos(ids);
     }
 
@@ -79,7 +86,7 @@ public class ProductController {
 
     // Get all products
         @GetMapping("/product/all")
-    public List<ProductDto> getAllProducts() {
+    public List<ProductResponse> getAllProducts() {
         return productService.GetProducts();
     }
 

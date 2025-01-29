@@ -202,7 +202,8 @@ const MainPage = ({ token, url }) => {
                   className="bg-bg-light-subtle h-100 shadow-sm"
                   style={{ border: "0px" }}
                 >
-                  <Card.Img variant="top" src={product.imageUrl || reactLogo} />
+                  {console.log(product.photoPaths[0])}
+                  <Card.Img variant="top" src={product.photoPaths[0] || reactLogo} />
                   <Card.Body className="d-flex flex-column">
                     <Card.Title>{product.productName}</Card.Title>
                     <Card.Text>

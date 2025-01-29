@@ -33,7 +33,7 @@ const useFetch = (url, token) => {
         setLoading(false);
       }
     },
-    [url, token] // Dependencies
+    [url, token] 
   );
 
   return { data, loading, error, sendRequest };

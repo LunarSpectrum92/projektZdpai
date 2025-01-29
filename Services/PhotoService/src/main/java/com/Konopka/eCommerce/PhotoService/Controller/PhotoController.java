@@ -45,7 +45,7 @@ public class PhotoController {
 
 
     @GetMapping("/photos")
-    public ResponseEntity<Set<Path>> findPhotosByIds(@RequestBody List<Integer> ids) {
+    public ResponseEntity<Set<Path>> findPhotosByIds(@RequestParam List<Integer> ids) {
         return photoService.findPhotosByIds(ids);
     }
 

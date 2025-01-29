@@ -1,11 +1,9 @@
 package com.Konopka.eCommerce.Services;
 
 
-import com.Konopka.eCommerce.DTO.PhotoDto;
+import com.Konopka.eCommerce.DTO.*;
 import com.Konopka.eCommerce.models.Category;
 import com.Konopka.eCommerce.models.Photo;
-import com.Konopka.eCommerce.DTO.ProductDto;
-import com.Konopka.eCommerce.DTO.ProductDtoMapper;
 import com.Konopka.eCommerce.models.PhotoFeign;
 import com.Konopka.eCommerce.models.Product;
 import com.Konopka.eCommerce.Repository.CategoryRepo;
@@ -26,23 +24,27 @@ public class ProductService {
     private ProductRepo productRepo;
     private CategoryRepo categoryRepo;
     private ProductDtoMapper productDtoMapper;
+    private ProductResponseMapper productResponseMapper;
     private PhotoFeign photoFeign;
 
 
     @Autowired
-    public ProductService(ProductRepo productRepo, ProductDtoMapper productDto, CategoryRepo categoryRepo, PhotoFeign photoFeign) {
+    public ProductService(ProductRepo productRepo, ProductDtoMapper productDto, CategoryRepo categoryRepo, PhotoFeign photoFeign, ProductResponseMapper productResponseMapper) {
         this.productRepo = productRepo;
         this.productDtoMapper = productDto;
         this.categoryRepo = categoryRepo;
         this.photoFeign = photoFeign;
+        this.productResponseMapper = productResponseMapper;
     }
 
 
-    public List<ProductDto> GetProducts(){
+    public List<ProductResponse> GetProducts(){
         return productRepo.findAll().stream()
-                .map(productDtoMapper)
+                .map((product) -> productResponseMapper.Map(product))
                 .toList();
     }
+
+
 
 
     //adding products to order
@@ -96,7 +98,8 @@ public class ProductService {
 
 
 
-    public ResponseEntity<Product> createProduct(ProductDto productDto){
+    public ResponseEntity<Product> createProduct(ProductDto productDto, Set<MultipartFile> file) {
+        System.out.println("ashdashdasdhas");
         if(productRepo.findById(productDto.productId()).isPresent()){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }else{
@@ -108,6 +111,20 @@ public class ProductService {
             product.setQuantity(productDto.quantity());
             product.setDiscount(productDto.discount());
             product.setCategory(categoryRepo.findAllById(productDto.category()));
+
+            Set<Integer> photosIds = new HashSet<>();
+
+
+            for(MultipartFile photo : file){
+                ResponseEntity<Photo> response = photoFeign.addPhoto(photo);
+                if ((response == null) || (response.getBody() == null)) {
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+                photosIds.add(response.getBody().getPhotoId());
+            }
+
+            product.setPhotoIds(new ArrayList<>(photosIds));
+
 
             return new ResponseEntity<>(
                     productRepo.save(product)

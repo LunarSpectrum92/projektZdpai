@@ -24,6 +24,6 @@ public interface PhotoFeign {
 
 
     @GetMapping("/photos")
-    ResponseEntity<Set<Path>> findPhotosByIds(@RequestBody List<Integer> ids);
+    ResponseEntity<Set<Path>> findPhotosByIds(@RequestParam List<Integer> ids);
 
 }

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import axios from 'axios';
 
-const useGetFetch = (url, token) => {
+const useGetFetchWithCallback = (url, token) => {
   
   const [urlFinal, setrlFinal] = useState(url)
   const [tokenFinal, setTokenFinal] = useState(url)
@@ -11,7 +11,7 @@ const useGetFetch = (url, token) => {
   const [error, setError] = useState(null);
 
 
-  useEffect(() => {
+  const sendRequest = useCallback((url) => {
 
 
     setError(null);
@@ -41,7 +41,7 @@ const useGetFetch = (url, token) => {
     
   }, [url, token]); 
 
-  return { data, loading, error };
+  return { data, loading, error, sendRequest };
 };
 
-export default useGetFetch;
+export default useGetFetchWithCallback;

@@ -6,7 +6,7 @@ import AddressForm from '../Components/AddressForm';
 import { User, MapPin, ShoppingBag } from 'lucide-react';
 import useGetFetch from "../hooks/useGetFetch";
 import ProductsComponent from '../Components/ProductsComponent.jsx';
-import ProductForm from '../Components/ProductForm.jsx';
+import PostProductForm from '../Components/PostProductForm.jsx';
 import PhotosDragAndDrop from '../Components/PhotosDragAndDrop.jsx';
 
 
@@ -47,8 +47,8 @@ const AccountPage = ({ token}) => {
                                 <ProductsComponent token={token} />
                             </Tab.Pane>
                             <Tab.Pane eventKey="second">
-                                <PhotosDragAndDrop/>
-                                <ProductForm token={token} url={`http://localhost:8222/api/products/product`}/>
+                                <PostProductForm token={token} url={`http://localhost:8222/api/products/product/put`}/>
+
                             </Tab.Pane>
                           </Tab.Content>
                         </Col>

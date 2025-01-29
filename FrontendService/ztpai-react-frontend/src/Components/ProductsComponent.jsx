@@ -15,7 +15,7 @@ import { CartProductsContext } from "../Contexts/CartProductsContext.jsx";
 import PaginationProducts from "../Components/PaginationProducts.jsx";
 import useGetFetch from "../hooks/useGetFetch.jsx";
 import { Link } from "react-router-dom";
-import ProductForm from '../Components/ProductForm.jsx';
+import PutProductForm from './PutProductForm.jsx';
 
 const MainPage = ({ token }) => {
   const defaultUrl = "http://localhost:8222/api/products/product/all";
@@ -96,7 +96,7 @@ const MainPage = ({ token }) => {
                       <Accordion.Item eventKey="0" className="border-0">
                         <Accordion.Header>update product</Accordion.Header>
                         <Accordion.Body>
-                            <ProductForm token={token} productId={product.productId} url={`http://localhost:8222/api/products/product/put`}/>
+                            <PutProductForm token={token} url={`http://localhost:8222/api/products/product`} productId={product.productId}/>
                         </Accordion.Body>
                       </Accordion.Item>
                     </Accordion>

@@ -5,7 +5,7 @@ import usePostFetch from "../hooks/usePostFetch.jsx";
 
 import useGetFetch from "../hooks/useGetFetch.jsx";
 
-const ProductForm = ({ token, productId, url }) => {
+const PutProductForm = ({ token,productId, url }) => {
     const [formData, setFormData] = useState({
       productId: productId || "",
       productName: "",
@@ -19,9 +19,7 @@ const ProductForm = ({ token, productId, url }) => {
   
     const [errors, setErrors] = useState({});
 
-    const { data: response, loading, error, sendRequest } = productId
-    ? usePutFetch(url, token) 
-    : usePostFetch(url, token);
+    const { data: response, loading, error, sendRequest } = usePutFetch(url, token);
   
 
   
@@ -174,4 +172,6 @@ const ProductForm = ({ token, productId, url }) => {
     );
   };
   
-  export default ProductForm;
+  export default PutProductForm;
+
+
