@@ -13,6 +13,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/client_db
     username: root
     password: postgres
+
   jpa:
     database: postgresql
     show-sql: true

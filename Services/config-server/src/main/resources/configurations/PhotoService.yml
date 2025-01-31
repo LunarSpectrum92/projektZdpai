@@ -24,3 +24,4 @@ application:
   config:
     client-url: http://localhost:9010/api
     product-url: http://localhost:9020/api
+
