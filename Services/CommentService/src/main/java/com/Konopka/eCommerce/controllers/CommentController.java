@@ -1,6 +1,8 @@
 package com.Konopka.eCommerce.controllers;
 
 
+import com.Konopka.eCommerce.DTO.CommentDTO;
+import com.Konopka.eCommerce.DTO.CommentRequest;
 import com.Konopka.eCommerce.models.Comment;
 import com.Konopka.eCommerce.services.CommentService;
 import jakarta.validation.Valid;
@@ -27,7 +29,7 @@ public class CommentController {
 
     //create comment
     @PostMapping("/comment")
-    public ResponseEntity<Comment> addComment(@Valid @RequestBody Comment comment) {
+    public ResponseEntity<CommentDTO> addComment(@RequestBody CommentRequest comment) {
         return commentService.createComment(comment);
     }
 
@@ -51,7 +53,7 @@ public class CommentController {
 
     //getCommentsByProductId
     @GetMapping("/comment/product/{productId}")
-    public ResponseEntity<List<Comment>> getCommentsByProductId(@PathVariable  Integer productId) {
+    public ResponseEntity<List<CommentDTO>> getCommentsByProductId(@PathVariable Integer productId) {
         return commentService.getAllCommentsByProduct(productId);
     }
 

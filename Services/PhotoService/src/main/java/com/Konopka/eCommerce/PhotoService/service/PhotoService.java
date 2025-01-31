@@ -3,6 +3,8 @@ package com.Konopka.eCommerce.PhotoService.service;
 import com.Konopka.eCommerce.models.Photo;
 import com.Konopka.eCommerce.PhotoService.Repository.PhotoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -118,24 +120,41 @@ public class PhotoService {
 
 
 
-    public ResponseEntity<Path> findPhotoById(Integer photoId) {
+    public ResponseEntity<Resource> findPhotoById(Integer photoId) {
         Optional<Photo> photo = photoRepository.findById(photoId);
         if (photo.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
         String photoPath = photo.get().getPhotoPath();
         if (photoPath == null || photoPath.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // or handle accordingly
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
         Path path = Path.of(photoPath).normalize();
-        return new ResponseEntity<>(path, HttpStatus.OK);
+        Resource resource = new FileSystemResource(path.toFile());
+
+        if (!resource.exists() || !resource.isReadable()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        String contentType = "image/" + photoPath.substring(photoPath.lastIndexOf('.') + 1).toLowerCase();
+        headers.setContentType(MediaType.valueOf(contentType));
+        headers.setContentDisposition(ContentDisposition.builder("inline")
+                .filename(path.getFileName().toString())
+                .build());
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(resource);
     }
 
 
 
-    public ResponseEntity<Set<Path>> findPhotosByIds(List<Integer> photoIds) {
+    public ResponseEntity<Set<String>> findPhotosByIds(List<Integer> photoIds) {
         if (photoIds == null || photoIds.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Or an appropriate message
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         Set<Integer> uniquePhotoIds = new HashSet<>(photoIds);
@@ -145,20 +164,19 @@ public class PhotoService {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Set<Path> paths = new HashSet<>();
+        Set<String> photoUrls = new HashSet<>();
         for (Photo photo : photoList) {
             String photoPath = photo.getPhotoPath();
 
             if (photoPath == null || photoPath.isEmpty()) {
                 continue;
             }
-
-            paths.add(Path.of(photoPath).normalize());
+            String photoUrl = "http://localhost:9030/api/photos/photos/" + photo.getPhotoId();
+            photoUrls.add(photoUrl);
         }
 
-        return new ResponseEntity<>(paths, HttpStatus.OK);
+        return new ResponseEntity<>(photoUrls, HttpStatus.OK);
     }
-
 
 
 

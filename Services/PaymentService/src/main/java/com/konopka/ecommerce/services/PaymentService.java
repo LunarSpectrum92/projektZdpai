@@ -34,7 +34,7 @@ public class PaymentService {
         Payment payment = PaymentMapper.toPayment(paymentDto);
         paymentRepository.save(payment);
         //paymentProducer.producePaymentMessage(paymentDto);
-        paymentProducer.produceOrderMessage(paymentDto);
+//        paymentProducer.produceOrderMessage(paymentDto);
         return new ResponseEntity<>(payment.getPaymentId(), HttpStatus.CREATED);
     }
 
@@ -47,7 +47,6 @@ public class PaymentService {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         payment.get().setCustomerId(paymentRequest.customerId());
-        payment.get().setAmount(paymentRequest.amount());
         payment.get().setPaymentMethod(paymentRequest.paymentMethod());
 
         if(payment.get().getAmount().compareTo(paymentRequest.amount()) != 0) {

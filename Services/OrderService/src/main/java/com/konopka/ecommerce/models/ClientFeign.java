@@ -17,6 +17,13 @@ public interface ClientFeign {
 
     @GetMapping("/client/{userId}")
      ResponseEntity<Client> getClient(@PathVariable Integer userId);
+
+
+    @GetMapping("/client/keycloak/{keycloakId}")
+    ResponseEntity<Client> getClientByKeycloakId(@PathVariable String keycloakId);
+
+
+
 //    @GetMapping("/test")
 //    String test();
 

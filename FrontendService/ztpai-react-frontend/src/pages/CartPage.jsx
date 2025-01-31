@@ -1,21 +1,79 @@
-// @ts-ignore
 import reactLogo from '../assets/rb_3269.png';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Container, Card, Button, Badge } from 'react-bootstrap';
 import NavBar from '../Components/NavBar.jsx';
 import Footer from '../Components/Footer.jsx';
 import {CartProductsContext} from '../Contexts/CartProductsContext.jsx';
 import Timer from "../Components/Timer";
+import usePostFetch from "../hooks/usePostFetch.jsx";
+import { Link, useNavigate } from "react-router-dom";
 
-const CartPage = () => {
+
+const CartPage = ({ token, client }) => {
   const { cart, addToCart, removeQuantity } = useContext(CartProductsContext);
+  const [keycloakClientData, setKeycloakClientData] = useState(null);
+  const [orderData, setOrderData] = useState({
+    "clientId" : "",
+    "orderProductsList": [{
+      "productId": "",
+      "quantity": "",
+      "price": ""  
+    }]
+   });
+   const navigate = useNavigate();
+const { data: response, loading, error, sendRequest } = usePostFetch(`http://localhost:8222/api/orders/order`, token);
+  
+
+  useEffect(() => {
+    if (token && client?.idTokenParsed) {
+        setKeycloakClientData(client.idTokenParsed);
+    }
+}, [token, client]);
+
+const handleSubmit = () => {
+  if(!keycloakClientData) return;
+ 
+  const updatedOrderData = {
+    clientId: keycloakClientData.sub,
+    orderProductsList: cart.map(product => ({
+      productId: product.productId,
+      quantity: product.quantityCart,
+      price: product.price
+    }))
+  };
+
+  setOrderData(updatedOrderData);
+  console.log(updatedOrderData);
+
+
+
+  sendRequest(updatedOrderData);
+
+
+
+
+} 
+
+useEffect(() => {
+  
+  if (response) {
+    navigate('/payment', { state: {orderId: response.orderId, customerId: response.clientId, }}); 
+  }
+
+  if (error) {
+    console.error("Error while sending request", error);
+  }
+
+}, [response, error, navigate]);
+
+
 
 
   return (
-    <>
-      <NavBar />
+    <div className="d-flex flex-column min-vh-100">
+      <NavBar token={token}/>
       <Timer/>
-      <Container className="my-5">
+      <Container className="my-5 d-flex flex-column flex-grow-1">
         <h1>
           <Badge bg="secondary" className="my-2">
             Cart
@@ -65,10 +123,36 @@ const CartPage = () => {
             </Card>
           ))
         )}
+        {cart.length != 0 ? 
+        
+        
+        loading ? 
+        <Button
+        variant="outline-dark"
+        className="ms-1"
+        type='submit'
+        onClick={handleSubmit}
+          disabled
+      >
+        ...Processing
+      </Button>
+        :
+        <Button
+        variant="outline-dark"
+        className="ms-1"
+        type='submit'
+        onClick={handleSubmit}
+      >
+        Order
+      </Button> :
+
+        <p></p>
+        }
+        
       </Container>
       <Footer />
 
-    </>
+    </div>
   );
 };
 

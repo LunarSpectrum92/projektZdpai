@@ -6,8 +6,8 @@ import Footer from '../Components/Footer.jsx';
 
 const AboutUs = () => {
   return (
-    <>
-    <NavBar />
+    <div className="min-vh-100">
+    <NavBar token={token}/>
     <div className="container-fluid  mt-3" style={{ }}>
           <div className="container">
               <h1 className="mb-5">About Us</h1>
@@ -37,7 +37,7 @@ const AboutUs = () => {
           </div>
       </div>
       <Footer />
-      </>
+      </div>
     
   );
 };

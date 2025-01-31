@@ -12,6 +12,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   servlet:
     multipart:
+      enabled: true
       max-request-size: 2GB
       max-file-size: 2GB
 

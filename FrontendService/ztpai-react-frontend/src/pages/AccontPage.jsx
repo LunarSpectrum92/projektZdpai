@@ -60,70 +60,73 @@ const AccountPage = ({ token, client }) => {
         { label: 'Flat Number', value: address.flatNumber },
         { label: 'Postal Code', value: address.postalCode },
     ];
-
     return (
-        <>
-            <NavBar />
-            <Tab.Container id="account-tabs" defaultActiveKey="address">
-                <Row className="mx-5 my-5">
-                    <Col sm={3}>
-                        <Nav variant="pills" className="flex-column">
-                            <Nav.Item>
-                                <Nav.Link eventKey="address" className="mb-2">
-                                    <MapPin size={18} className="me-2" /> Address Data
-                                </Nav.Link>
-                            </Nav.Item>
-                            <Nav.Item>
-                                <Nav.Link eventKey="account" className="mb-2">
-                                    <User size={18} className="me-2" /> Account
-                                </Nav.Link>
-                            </Nav.Item>
-                            <Nav.Item>
-                                <Nav.Link eventKey="orders" className="mb-2">
-                                    <ShoppingBag size={18} className="me-2" /> My Orders
-                                </Nav.Link>
-                            </Nav.Item>
-                        </Nav>
-                    </Col>
-                    <Col sm={9} xs={12} md={6} lg={6}>
-                        <Tab.Content>
-                            <Tab.Pane eventKey="address">
-                                <h4>Your Data</h4>
-                                <Card className="my-3">
-                                    <ListGroup variant="flush">
-                                        {addressFields.map(({ label, value }) => (
-                                            <ListGroup.Item key={label}>
-                                                <strong>{label}:</strong> {value || 'Not provided'}
-                                            </ListGroup.Item>
-                                        ))}
-                                    </ListGroup>
-                                </Card>
-                                <Accordion>
-                                    <Accordion.Item eventKey="0">
-                                        <Accordion.Header>Change Data</Accordion.Header>
-                                        <Accordion.Body>
-                                            <AddressForm token={token} />
-                                        </Accordion.Body>
-                                    </Accordion.Item>
-                                </Accordion>
-                            </Tab.Pane>
-                            <Tab.Pane eventKey="account">
-                                <a href="http://localhost:7080/realms/eCommerce-realm/account" 
-                                   className="btn btn-primary">
-                                    Go to My Account
-                                </a>
-                            </Tab.Pane>
-                            <Tab.Pane eventKey="orders">
-                                <h4>My Orders</h4>
-                                <p>Orders history will be displayed here</p>
-                            </Tab.Pane>
-                        </Tab.Content>
-                    </Col>
-                </Row>
-            </Tab.Container>
+        <div className="d-flex flex-column min-vh-100"> 
+            <NavBar token={token}/>
+            <div className="flex-grow-1"> 
+                
+                <Tab.Container id="account-tabs" defaultActiveKey="address">
+                    <Row className="mx-5 my-5">
+                        <Col sm={3}>
+                            <Nav variant="pills" className="flex-column">
+                                <Nav.Item>
+                                    <Nav.Link eventKey="address" className="mb-2">
+                                        <MapPin size={18} className="me-2" /> Address Data
+                                    </Nav.Link>
+                                </Nav.Item>
+                                <Nav.Item>
+                                    <Nav.Link eventKey="account" className="mb-2">
+                                        <User size={18} className="me-2" /> Account
+                                    </Nav.Link>
+                                </Nav.Item>
+                                <Nav.Item>
+                                    <Nav.Link eventKey="orders" className="mb-2">
+                                        <ShoppingBag size={18} className="me-2" /> My Orders
+                                    </Nav.Link>
+                                </Nav.Item>
+                            </Nav>
+                        </Col>
+                        <Col sm={9} xs={12} md={6} lg={6}>
+                            <Tab.Content>
+                                <Tab.Pane eventKey="address">
+                                    <h4>Your Data</h4>
+                                    <Card className="my-3">
+                                        <ListGroup variant="flush">
+                                            {addressFields.map(({ label, value }) => (
+                                                <ListGroup.Item key={label}>
+                                                    <strong>{label}:</strong> {value || 'Not provided'}
+                                                </ListGroup.Item>
+                                            ))}
+                                        </ListGroup>
+                                    </Card>
+                                    <Accordion>
+                                        <Accordion.Item eventKey="0">
+                                            <Accordion.Header>Change Data</Accordion.Header>
+                                            <Accordion.Body>
+                                                <AddressForm token={token} />
+                                            </Accordion.Body>
+                                        </Accordion.Item>
+                                    </Accordion>
+                                </Tab.Pane>
+                                <Tab.Pane eventKey="account">
+                                    <a href="http://localhost:7080/realms/eCommerce-realm/account" 
+                                       className="btn btn-primary">
+                                        Go to My Account
+                                    </a>
+                                </Tab.Pane>
+                                <Tab.Pane eventKey="orders">
+                                    <h4>My Orders</h4>
+                                    <p>Orders history will be displayed here</p>
+                                </Tab.Pane>
+                            </Tab.Content>
+                        </Col>
+                    </Row>
+                </Tab.Container>
+            </div>  
             <Footer />
-        </>
+        </div>
     );
+    
 };
 
 export default AccountPage;

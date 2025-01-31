@@ -36,7 +36,6 @@ const useGetFetch = (url, token) => {
       });
 
     }
-    console.log(data)
       
     
   }, [url, token]); 

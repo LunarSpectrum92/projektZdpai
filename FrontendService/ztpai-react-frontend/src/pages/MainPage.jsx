@@ -1,25 +1,102 @@
 import React, { useState, useContext, useEffect } from 'react';
-import {  Image, Container, Row, Col, Card,Button,  Carousel, Form ,Dropdown, DropdownButton ,ButtonGroup   } from 'react-bootstrap';
+import {  Image, Container, Row, Col, Card,Button,  Carousel, Form ,Dropdown, DropdownButton ,ButtonGroup, Spinner  } from 'react-bootstrap';
 import NavBar from '../Components/NavBar.jsx'
-// @ts-ignore
 import reactLogo from '../assets/rb_3269.png'
 import Footer from '../Components/Footer.jsx';
 import {CartProductsContext} from '../Contexts/CartProductsContext.jsx';
 import { products } from '../assets/products.js';
 import ContactUs from '../Components/ContactUs.jsx';
+import useGetFetch from "../hooks/useGetFetch.jsx";
+import { Link } from "react-router-dom";
+import PaginationProducts from "../Components/PaginationProducts.jsx";
+
+
+
 
 const MainPage = ({token}) => {
 
 
   const {addToCart} = useContext(CartProductsContext);
 
-  const [displayProducts, setDisplayProducts] = useState([]);
+  const defaultUrl = "http://localhost:8222/api/products/product/all";
+  const [finalUrl, setFinalUrl] = useState(defaultUrl);
+
+
 
   useEffect(() => {
-   setDisplayProducts(products);
+    if (defaultUrl) setFinalUrl(defaultUrl);
   }, []);
-   
 
+  const { data: products, loading, error } = useGetFetch(finalUrl, token);
+  const { data: brands, loadingBrands, errorBrands } = useGetFetch(
+    "http://localhost:8222/api/products/products/brand",
+    token
+  );
+  const { data: categories, loadingCategories, errorCategories } = useGetFetch(
+    "http://localhost:8222/api/categories/categories",
+    token
+  );
+
+
+  const [state, setState] = useState({
+    data: [],
+    limit: 9,
+    activePage: 1,
+  });
+  const [addedToCart, setAddedToCart] = useState({});
+
+  useEffect(() => {
+    if (products) {
+      setState((prev) => ({
+        ...prev,
+        data: products,
+      }));
+    }
+  }, [products]);
+
+  const handlePageChange = (pageNumber) => {
+    setState((prev) => ({
+      ...prev,
+      activePage: pageNumber,
+    }));
+  };
+
+  const handleBrandFiltering = (brand) => {
+    if(brand === "All"){
+      setFinalUrl(
+        `http://localhost:8222/api/products/product/all`
+      );
+
+      return
+    }
+    setFinalUrl(
+      `http://localhost:8222/api/products/product/brand?brand=${encodeURIComponent(brand)}`
+    );
+  };
+
+
+  const handleCategoryFiltering = (categoryId) => {
+    if(categoryId === "All"){
+      setFinalUrl(
+        `http://localhost:8222/api/products/product/all`
+      );
+
+      return
+    }
+    setFinalUrl(
+      `http://localhost:8222/api/products/product/category?categoryId=${encodeURIComponent(categoryId)}`
+    );
+  };
+
+
+
+  const indexOfLastProduct = state.activePage * state.limit;
+  const indexOfFirstProduct = indexOfLastProduct - state.limit;
+  const displayProducts = state.data.slice(indexOfFirstProduct, indexOfLastProduct);
+
+
+
+  
   const handleAddToCart = (product) => {
     alert("added to cart")
     addToCart(product);
@@ -29,9 +106,9 @@ const MainPage = ({token}) => {
 
 
     return (
-    <>
+      <div className="min-vh-100">
 
-        <NavBar/>    
+        <NavBar token={token}/>    
       <div className="bg-light text-center py-5">
         <Container>
         <Row>
@@ -69,49 +146,68 @@ const MainPage = ({token}) => {
 
       
       <Container className="my-5 ">
-        <h2 className=" mb-4">Trending</h2>
-        <DropdownButton
-            as={ButtonGroup}
-            variant="dark"
-            title="filtres"
-            className="mb-4"
-          >
-            <Dropdown.Item eventKey="1">Action</Dropdown.Item>
-            <Dropdown.Item eventKey="2">Another action</Dropdown.Item>
-            <Dropdown.Item eventKey="3" active>
-              Active Item
-            </Dropdown.Item>
-            <Dropdown.Divider />
-            <Dropdown.Item eventKey="4">Separated link</Dropdown.Item>
-          </DropdownButton>
+        <h2 className=" mb-4">Newest</h2>
+
 
         <Row className="g-3 ">
-        {displayProducts.map((card) =>
-            <Col md={4} sm={6} xs={6} key={card.productId}>
-            <Card className=" bg-bg-light-subtle h-100 shadow-sm " style={{border: '0px'}}>
-                <Card.Img variant="top" className='' src={reactLogo} />
-                <Card.Body className="d-flex flex-column">
-                  <Card.Title>{card.productName}</Card.Title>
-                  <Card.Text>
-                    {card.description}
-                    <br />
-                    <p><b>{card.price}</b> PLN</p>
-                  </Card.Text>
-                  <div className="mt-auto">
-                    <Button variant="outline-dark" className="w-0" onClick={() => handleAddToCart(card)}>Add to Cart</Button>
-                  </div>
-                </Card.Body>
-            </Card>
-            </Col>
+        {loading ? (
+          <Spinner animation="border" />
+        ) : error ? (
+          <p>Błąd: {error}</p>
+        ) : (
+          <Row className="g-3 mb-2">
+            {displayProducts.map((product) => (
+              
+              <Col md={4} sm={6} xs={12} key={product.productId}>
+              <Link  to={{
+                          pathname: `/product/${product.productId}`                          
+                        }}>
+
+                <Card
+                  className="bg-bg-light-subtle h-100 shadow-sm"
+                  style={{ border: "0px" }}
+                >
+                  <Card.Img variant="top" src={product.photoPaths[0] || reactLogo} style={{ objectFit: "cover"}} />
+                  <Card.Body className="d-flex flex-column">
+                    <Card.Title>{product.productName}</Card.Title>
+                    <Card.Text className="">
+                      {product.description}
+                      <br />
+                      <p>
+                        <b>{product.price}</b> PLN
+                      </p>
+                    </Card.Text>
+                    <div className="mt-auto">
+                      <Button
+                        variant="outline-dark"
+                        disabled={addedToCart[product.productId]}
+                        onClick={() => handleAddToCart(product)}
+                      >
+                        {addedToCart[product.productId] ? "Dodano" : "Dodaj do koszyka"}
+                      </Button>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Link>
+
+              </Col>
+
+            ))}
+          </Row>
         )}
 
         </Row>
+        <PaginationProducts
+          paginationNumber={Math.ceil(state.data.length / state.limit)}
+          activePage={state.activePage}
+          onPageChange={handlePageChange}
+        />
       </Container>
 
       <ContactUs/>
 
         <Footer/>
-    </>
+    </div>
   );
 };
 

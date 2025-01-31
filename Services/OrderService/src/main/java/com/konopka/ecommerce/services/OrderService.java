@@ -9,11 +9,13 @@ import com.Konopka.eCommerce.kafka.OrderMessageProducer;
 import com.Konopka.eCommerce.models.*;
 import com.Konopka.eCommerce.repositories.OrderProductRepository;
 import com.Konopka.eCommerce.repositories.OrderRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 
 
 @Service
+@Slf4j
 public class OrderService {
 
     private OrderRepository orderRepository;
@@ -50,11 +53,12 @@ public class OrderService {
         BigDecimal amount = BigDecimal.ZERO;
 
         //verify client
-        ResponseEntity<Client> client = clientFeign.getClient(Integer.parseInt(orderRequest.clientId()));
+        ResponseEntity<Client> client = clientFeign.getClientByKeycloakId(orderRequest.clientId());
         if(!client.hasBody()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
+        List<OrderProduct> productDtos = new ArrayList<>();
         //verify products and quantity
         for(OrderProductDto orderProductDto : orderRequest.orderProductsList()){
             var product = productFeign.findById(orderProductDto.productId(), orderProductDto.quantity());
@@ -66,12 +70,8 @@ public class OrderService {
             //count total amount
             amount = amount.add(orderProductDto.price());
 
+            productDtos.add(OrderDtoMapper.mapOrderProductToEntity(orderProductDto));
 
-            try {
-                orderProductRepository.save(OrderDtoMapper.mapOrderProductToEntity(orderProductDto));
-            }catch (Exception e){
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
         }
 
         //create order
@@ -91,6 +91,16 @@ public class OrderService {
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
+        for(OrderProduct op : productDtos){
+            op.setOrder(order);
+            try {
+                orderProductRepository.save(op);
+            }catch (Exception e){
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+
 
         //send message to payment
         orderMessageProducer.produceOrderMessage(OrderDtoMapper.toDto(order));
@@ -116,6 +126,11 @@ public class OrderService {
         if(orders.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
+        System.out.println("Liczba zamówień: " + orders.size());
+
+        orders.forEach(order -> log.info("Order ID: {}", order.getOrderProductsList()));
+
         List<OrderDto> orderDtos = orders.stream()
                 .sorted(Comparator.comparing(Order::getOrderDate))
                 .map(OrderDtoMapper::toDto)
@@ -130,11 +145,13 @@ public class OrderService {
         if(orders.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
+
+
         List<OrderDto> orderDtos = orders.stream()
                 .sorted(Comparator.comparing(Order::getOrderDate))
                 .map(OrderDtoMapper::toDto)
                 .toList();
-
         return new ResponseEntity<>(orderDtos,  HttpStatus.OK);
     }
 

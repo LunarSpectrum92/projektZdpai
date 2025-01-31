@@ -17,12 +17,17 @@ import Footer from "../Components/Footer.jsx";
 import { CartProductsContext } from "../Contexts/CartProductsContext.jsx";
 import PaginationProducts from "../Components/PaginationProducts.jsx";
 import useGetFetch from "../hooks/useGetFetch.jsx";
-import { Link } from "react-router-dom";
+import useGetFetchWithCallback from '../hooks/useGetFetchWithCallback';
+
+import { Link,useLocation } from "react-router-dom";
 
 
 
 
-const MainPage = ({ token, url }) => {
+const MainPage = ({ token}) => {
+
+  const location = useLocation();
+  const { url } = location.state || {};
 
 
   const defaultUrl = "http://localhost:8222/api/products/product/all";
@@ -31,12 +36,16 @@ const MainPage = ({ token, url }) => {
 
 
 
+  // useEffect(() => 
+  // {
+  //   fetchData()
+  // },[])
 
-  useEffect(() => {
-    if (url) setFinalUrl(url);
-  }, [url]);
 
-  const { data: products, loading, error } = useGetFetch(finalUrl, token);
+
+
+
+  const { data: products, loading, error,fetchData} = useGetFetchWithCallback(finalUrl, token);
   const { data: brands, loadingBrands, errorBrands } = useGetFetch(
     "http://localhost:8222/api/products/products/brand",
     token
@@ -63,6 +72,15 @@ const MainPage = ({ token, url }) => {
       }));
     }
   }, [products]);
+
+
+  useEffect(() => {
+    const urlToUse = url || defaultUrl;
+    setFinalUrl(urlToUse);
+    fetchData(urlToUse);
+  }, [url, fetchData]);
+
+
 
   const handlePageChange = (pageNumber) => {
     setState((prev) => ({
@@ -117,10 +135,11 @@ const MainPage = ({ token, url }) => {
   const displayProducts = state.data.slice(indexOfFirstProduct, indexOfLastProduct);
 
   return (
-    <>
-      <NavBar />
+    <div className="min-vh-100">
+
+      <NavBar token={token}/>
       <Container className="my-5">
-        <h2 className="mb-4">Trending</h2>
+        <h2 className="mb-4">Products</h2>
 
         {loadingBrands ? (
           <Spinner animation="border" />
@@ -193,7 +212,7 @@ const MainPage = ({ token, url }) => {
           <Row className="g-3 mb-2">
             {displayProducts.map((product) => (
               
-              <Col md={4} sm={6} xs={6} key={product.productId}>
+              <Col md={4} sm={6} xs={12} key={product.productId}>
               <Link  to={{
                           pathname: `/product/${product.productId}`                          
                         }}>
@@ -202,11 +221,10 @@ const MainPage = ({ token, url }) => {
                   className="bg-bg-light-subtle h-100 shadow-sm"
                   style={{ border: "0px" }}
                 >
-                  {console.log(product.photoPaths[0])}
-                  <Card.Img variant="top" src={product.photoPaths[0] || reactLogo} />
+                  <Card.Img variant="top" src={product.photoPaths[0] || reactLogo} style={{ objectFit: "cover"}} />
                   <Card.Body className="d-flex flex-column">
                     <Card.Title>{product.productName}</Card.Title>
-                    <Card.Text>
+                    <Card.Text className="">
                       {product.description}
                       <br />
                       <p>
@@ -239,7 +257,7 @@ const MainPage = ({ token, url }) => {
         />
       </Container>
       <Footer />
-    </>
+    </div>
   );
 };
 

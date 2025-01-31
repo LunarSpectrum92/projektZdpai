@@ -64,7 +64,7 @@ const MainPage = ({ token }) => {
                       <Col md={4} sm={12} xs={12}>
                         <Card.Img
                           variant="top"
-                          src={product.imageUrl || reactLogo}
+                          src={product.photoPaths[0] || reactLogo}
                           style={{
                             width: "100%",
                             height: "auto",
@@ -96,7 +96,7 @@ const MainPage = ({ token }) => {
                       <Accordion.Item eventKey="0" className="border-0">
                         <Accordion.Header>update product</Accordion.Header>
                         <Accordion.Body>
-                            <PutProductForm token={token} url={`http://localhost:8222/api/products/product`} productId={product.productId}/>
+                            <PutProductForm token={token} url={`http://localhost:8222/api/products/product/put`} productId={product.productId}/>
                         </Accordion.Body>
                       </Accordion.Item>
                     </Accordion>

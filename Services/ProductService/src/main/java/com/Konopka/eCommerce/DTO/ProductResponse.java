@@ -13,6 +13,6 @@ public record ProductResponse(
         Integer quantity,
         List<Integer> category,
         Integer discount,
-        Set<Path> photoPaths
+        Set<String> photoPaths
 ) {
 }

@@ -25,7 +25,6 @@ public class PaymentConsument {
 
     @KafkaListener(topics = "OrderToPayment", groupId = "notifications-group")
     public void consumePayment(OrderDto orderDto) {
-        System.out.println(orderDto.toString());
 
         PaymentDto paymentDto = PaymentDto.builder()
                 .amount(orderDto.totalAmount())

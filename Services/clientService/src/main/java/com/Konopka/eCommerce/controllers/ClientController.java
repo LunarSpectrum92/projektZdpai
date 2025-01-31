@@ -66,7 +66,7 @@ public class ClientController {
 
     // get photo from client
     @GetMapping("/client/photo/{id}")
-    public ResponseEntity<Path> findPhotoById(@PathVariable int id){
+    public ResponseEntity<String> findPhotoById(@PathVariable int id){
         return clientService.findAvatarById(id);
     }
 

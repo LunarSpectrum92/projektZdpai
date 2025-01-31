@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.sql.Timestamp;
@@ -29,7 +30,7 @@ public class Comment {
     @Size(max = 1000, message = "Comment body must not exceed 1000 characters")  // Added size validation for the body
     private String commentBody;
 
-    @CreatedDate  // Automatically handled by Spring Data JPA (ensure @EnableJpaAuditing is in config)
+    @CreationTimestamp
     private Timestamp commentDate;
 
     @Min(value = 1, message = "Score must be at least 1")

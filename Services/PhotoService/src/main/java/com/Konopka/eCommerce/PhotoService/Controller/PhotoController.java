@@ -4,6 +4,7 @@ package com.Konopka.eCommerce.PhotoService.Controller;
 import com.Konopka.eCommerce.models.Photo;
 import com.Konopka.eCommerce.PhotoService.service.PhotoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,14 +39,14 @@ public class PhotoController {
     }
 
 
-    @GetMapping("/photo/{id}")
-    public ResponseEntity<Path> findPhotoById(@PathVariable int id) {
+    @GetMapping("/photos/{id}")
+    public ResponseEntity<Resource> findPhotoById(@PathVariable int id) {
             return photoService.findPhotoById(id);
     }
 
 
     @GetMapping("/photos")
-    public ResponseEntity<Set<Path>> findPhotosByIds(@RequestParam List<Integer> ids) {
+    public ResponseEntity<Set<String>> findPhotosByIds(@RequestParam List<Integer> ids) {
         return photoService.findPhotosByIds(ids);
     }
 

@@ -34,7 +34,7 @@ public class ProductController {
 
     //get all products
     @GetMapping("/products")
-    public List<ProductDto> GetProductsById(@RequestBody List<Integer> ids){
+    public List<ProductResponse> GetProductsById(@RequestBody List<Integer> ids){
         return productService.GetProductsById(ids);
     }
 
@@ -46,7 +46,7 @@ public class ProductController {
 
 
     @GetMapping("/prduct/{id}")
-    public ResponseEntity<ProductDto> getProductById(@PathVariable int id){
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable int id){
         return productService.findProductById(id);
     }
 
@@ -56,16 +56,22 @@ public class ProductController {
         return productService.GetProductsByName(name);
     }
 
+
+
     //create product
     @PostMapping(value = "/product", consumes = "multipart/form-data")
     public ResponseEntity<Product> createProduct(
             @RequestPart("data") ProductDto productDto,
-            @RequestPart("photoS") Set<MultipartFile> photo
+            @RequestPart("photoS") List<MultipartFile> photo
     ){
         System.out.println("ashdasasdasdhdasdhas");
 
         return productService.createProduct(productDto, photo);
     }
+
+
+
+
     //add product photo
     @PostMapping("/product/photos")
     public ResponseEntity<Set<Integer>> createPhotos(@RequestBody PhotoDto photoDto){
@@ -74,13 +80,13 @@ public class ProductController {
 
     //get product photo
     @GetMapping("/product/photos")
-    public ResponseEntity<Set<Path>> getPhotos(@RequestParam List<Integer> ids){
+    public ResponseEntity<Set<String>> getPhotos(@RequestParam List<Integer> ids){
         return productService.getPhotos(ids);
     }
 
     //finding products by category
     @GetMapping("/product/category")
-    public ResponseEntity<List<ProductDto>> getProductsForCategoryAndSubcategories(@RequestParam int categoryId) {
+    public ResponseEntity<List<ProductResponse>> getProductsForCategoryAndSubcategories(@RequestParam int categoryId) {
         return productService.getProductsForCategoryAndSubcategories(categoryId);
     }
 
@@ -105,13 +111,13 @@ public class ProductController {
 
     // Find products by brand
     @GetMapping("/product/brand")
-    public ResponseEntity<List<ProductDto>> findAllByBrand(@RequestParam String brand) {
+    public ResponseEntity<List<ProductResponse>> findAllByBrand(@RequestParam String brand) {
         return productService.findAllByBrand(brand);
     }
 
     // Search products by prompt
     @GetMapping("/product/search")
-    public ResponseEntity<List<ProductDto>> searchProducts(@RequestParam String prompt) {
+    public ResponseEntity<List<ProductResponse>> searchProducts(@RequestParam String prompt) {
         return productService.searchEngine(prompt);
     }
 
@@ -129,13 +135,13 @@ public class ProductController {
 
     // Get products sorted by price ascending
     @GetMapping("/product/price/asc")
-    public List<ProductDto> getProductsByPriceAsc() {
+    public List<ProductResponse> getProductsByPriceAsc() {
         return productService.findAllByOrderByPriceAsc();
     }
 
     // Get products sorted by price descending
     @GetMapping("/product/price/desc")
-    public List<ProductDto> getProductsByPriceDesc() {
+    public List<ProductResponse> getProductsByPriceDesc() {
         return productService.findAllByOrderByPriceDesc();
     }
 

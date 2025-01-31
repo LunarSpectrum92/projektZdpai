@@ -11,6 +11,8 @@ import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 import AccontPage from './pages/AccontPage.jsx';
 import AboutUs from './pages/AboutUs.jsx';
 import AdminPage from './pages/AdminPage.jsx';
+import PaymentPage from './pages/PaymentPage.jsx';
+
 
 
 
@@ -32,11 +34,11 @@ const router = createBrowserRouter([
   },
   {
     path: '/cart',
-    element: <CartPage/>
+    element: <CartPage token={token} client={client}/>
   },
   {
     path: '/product/:productId',
-    element: <ProductPage token={token}/>
+    element: <ProductPage token={token} client={client}/>
   },{
     path: '/products', 
     element: <ProductsPage token={token}/>
@@ -49,6 +51,9 @@ const router = createBrowserRouter([
   },{
     path: "/admin",
     element: <AdminPage token={token}/>
+  },{
+    path: "/payment",
+    element: <PaymentPage token={token}/>
   }
 ])  
 

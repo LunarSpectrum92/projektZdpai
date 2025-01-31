@@ -89,8 +89,8 @@ public class ClientService {
 
 
 
-    public ResponseEntity<Path> findAvatarById(Integer id){
-        ResponseEntity<Path> path = photoFeign.findPhotoById(id);
+    public ResponseEntity<String> findAvatarById(Integer id){
+        ResponseEntity<String> path = photoFeign.findPhotoById(id);
         if(path.hasBody()){
             return new ResponseEntity<>(path.getBody(), HttpStatus.OK);
         }

@@ -10,12 +10,14 @@ import java.util.stream.Collectors;
 public class OrderDtoMapper {
 
     public static OrderDto toDto(Order order) {
+
         return new OrderDto(
                 order.getOrderId(),
                 order.getTotalAmount(),
                 order.getOrderDate(),
                 order.getClientId(),
-                mapOrderProductsToDto(order.getOrderProductsList())
+                mapOrderProductsToDto(order.getOrderProductsList()),
+                order.getStatus()
                 //order.getPaymentMethod()
         );
     }
@@ -32,11 +34,15 @@ public class OrderDtoMapper {
 
     public static List<OrderProductDto> mapOrderProductsToDto(List<OrderProduct> orderProducts) {
         return orderProducts.stream()
-                .map(orderProduct -> new OrderProductDto(
-                        orderProduct.getProductId(),
-                        orderProduct.getQuantity(),
-                        orderProduct.getPrice()
-                ))
+                .map(orderProduct -> {
+                    System.out.println(orderProduct);
+                    return new OrderProductDto(
+                            orderProduct.getProductId(),
+                            orderProduct.getQuantity(),
+                            orderProduct.getPrice()
+                    );
+
+                })
                 .collect(Collectors.toList());
     }
 

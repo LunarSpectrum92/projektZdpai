@@ -41,7 +41,7 @@ public class CategoryController {
     }
 
 
-        @DeleteMapping("/category")
+    @DeleteMapping("/category")
     public ResponseEntity<Integer> deleteCategory(@RequestParam Integer categoryId) {
         return categoryService.DeleteCategory(categoryId);
     }

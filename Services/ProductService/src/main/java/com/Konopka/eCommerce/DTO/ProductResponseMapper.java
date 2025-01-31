@@ -30,7 +30,7 @@ public class ProductResponseMapper {
     }
 
     public ProductResponse Map(Product product) {
-        Set<Path> paths = new HashSet<>();
+        Set<String> paths = new HashSet<>();
         if(!product.getPhotoIds().isEmpty()){
             paths = photoFeign.findPhotosByIds(product.getPhotoIds()).getBody();
         }

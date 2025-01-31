@@ -9,8 +9,8 @@ const ErrorPage = () => {
 
   
     return (
-        <>
-        <NavBar/>
+      <div className="d-flex flex-column min-vh-100">
+        <NavBar token={token}/>
           <Container className="text-center d-flex flex-column justify-content-center align-items-center" style={{ height: "100vh" }}>
 
             <Row>
@@ -23,7 +23,7 @@ const ErrorPage = () => {
               </Col>
             </Row>
           </Container>
-        </>   
+        </div>   
 );
 };
 

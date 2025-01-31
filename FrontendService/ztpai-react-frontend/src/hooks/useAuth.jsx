@@ -28,7 +28,7 @@ const client = new Keycloak({
         .then((res) => {
           setLogin(res);
           setToken(client.token);
-          //console.log(client.idTokenParsed);
+          console.log(client);
         });
     }, []);
   

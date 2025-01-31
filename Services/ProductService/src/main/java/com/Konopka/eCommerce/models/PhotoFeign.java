@@ -1,6 +1,7 @@
 package com.Konopka.eCommerce.models;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,10 +21,10 @@ public interface PhotoFeign {
 
 
     @GetMapping("/photo/{id}")
-    ResponseEntity<Path> findPhotoById(@PathVariable int id);
+    ResponseEntity<Resource> findPhotoById(@PathVariable int id);
 
 
     @GetMapping("/photos")
-    ResponseEntity<Set<Path>> findPhotosByIds(@RequestParam List<Integer> ids);
+    ResponseEntity<Set<String>> findPhotosByIds(@RequestParam List<Integer> ids);
 
 }

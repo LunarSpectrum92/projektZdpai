@@ -1,5 +1,8 @@
 package com.Konopka.eCommerce.services;
 
+import com.Konopka.eCommerce.DTO.CommentDTO;
+import com.Konopka.eCommerce.DTO.CommentDtoMapper;
+import com.Konopka.eCommerce.DTO.CommentRequest;
 import com.Konopka.eCommerce.models.Comment;
 import com.Konopka.eCommerce.repositories.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,21 +18,31 @@ public class CommentService {
 
 
     CommentRepository commentRepository;
+    CommentDtoMapper commentDtoMapper;
 
 
     @Autowired
-    public CommentService(CommentRepository commentRepository) {
+    public CommentService(CommentRepository commentRepository, CommentDtoMapper commentDtoMapper) {
         this.commentRepository = commentRepository;
+        this.commentDtoMapper = commentDtoMapper;
     }
 
 
 
-    public ResponseEntity<Comment> createComment(Comment comment) {
-        if(commentRepository.findById(comment.getCommentId()).isPresent()){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<CommentDTO> createComment(CommentRequest commentRequest) {
 
-        return new ResponseEntity<>(commentRepository.save(comment), HttpStatus.CREATED);
+        Comment comment = Comment.builder()
+                .commentBody(commentRequest.commentBody())
+                .score(commentRequest.score())
+                .userId(commentRequest.userId())
+                .userId(commentRequest.userId())
+                .productId(commentRequest.productId())
+                .build();
+
+
+
+        commentRepository.save(comment);
+        return new ResponseEntity<>(commentDtoMapper.commentDTOMapper(comment), HttpStatus.CREATED);
     }
 
 
@@ -74,12 +87,19 @@ public class CommentService {
     }
 
 
-    public ResponseEntity<List<Comment>> getAllCommentsByProduct(Integer productId) {
+    public ResponseEntity<List<CommentDTO>> getAllCommentsByProduct(Integer productId) {
         List<Comment> comments = commentRepository.findAllByProductId(productId);
         if(comments.isEmpty()){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(comments, HttpStatus.OK);
+
+        List<CommentDTO> commentsMapped = comments.stream()
+                .map(commentDtoMapper::commentDTOMapper)
+                .toList();
+
+
+
+        return new ResponseEntity<>(commentsMapped, HttpStatus.OK);
     }
 
 

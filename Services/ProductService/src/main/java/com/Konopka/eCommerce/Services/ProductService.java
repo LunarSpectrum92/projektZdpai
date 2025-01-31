@@ -83,22 +83,22 @@ public class ProductService {
 
 
     //sorting prices asc
-    public List<ProductDto> findAllByOrderByPriceAsc(){
+    public List<ProductResponse> findAllByOrderByPriceAsc(){
         return productRepo.findAllByOrderByPriceAsc().stream()
-                .map(productDtoMapper)
+                .map((product) -> productResponseMapper.Map(product))
                 .toList();
     }
 
     //sorting prices asc
-    public List<ProductDto> findAllByOrderByPriceDesc(){
+    public List<ProductResponse> findAllByOrderByPriceDesc(){
         return productRepo.findAllByOrderByPriceDesc().stream()
-                .map(productDtoMapper)
+                .map((product) -> productResponseMapper.Map(product))
                 .toList();
     }
 
 
 
-    public ResponseEntity<Product> createProduct(ProductDto productDto, Set<MultipartFile> file) {
+    public ResponseEntity<Product> createProduct(ProductDto productDto, List<MultipartFile> file) {
         System.out.println("ashdashdasdhas");
         if(productRepo.findById(productDto.productId()).isPresent()){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
@@ -116,6 +116,7 @@ public class ProductService {
 
 
             for(MultipartFile photo : file){
+                System.out.println(photo);
                 ResponseEntity<Photo> response = photoFeign.addPhoto(photo);
                 if ((response == null) || (response.getBody() == null)) {
                     return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -188,25 +189,25 @@ public class ProductService {
     }
 
 
-    public ResponseEntity<Set<Path>> getPhotos(List<Integer> ids){
-        ResponseEntity<Set<Path>> response = photoFeign.findPhotosByIds(ids);
+    public ResponseEntity<Set<String>> getPhotos(List<Integer> ids){
+        ResponseEntity<Set<String>> response = photoFeign.findPhotosByIds(ids);
         if (response == null || response.getBody() == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        Set<Path> paths = response.getBody();
+        Set<String> paths = response.getBody();
         return new ResponseEntity<>(paths, HttpStatus.OK);
     }
 
 
 
-    public List<ProductDto> GetProductsById(List<Integer> ids){
+    public List<ProductResponse> GetProductsById(List<Integer> ids){
         return productRepo.findAllById(ids).stream()
-                .map(productDtoMapper)
+                .map((product) -> productResponseMapper.Map(product))
                 .toList();
     }
 
 
-    public ResponseEntity<List<ProductDto>> getProductsByCategory(Integer id){
+    public ResponseEntity<List<ProductResponse>> getProductsByCategory(Integer id){
 
         Optional<Category> category = categoryRepo.findById(id);
         if(category.isEmpty()){
@@ -218,7 +219,7 @@ public class ProductService {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(products.stream().map(productDtoMapper).toList(), HttpStatus.OK);
+        return new ResponseEntity<>(products.stream().map((product) -> productResponseMapper.Map(product)).toList(), HttpStatus.OK);
     }
 
 
@@ -226,21 +227,21 @@ public class ProductService {
 
 
 
-    public ResponseEntity<List<ProductDto>> findAllByBrand(String brand){
+    public ResponseEntity<List<ProductResponse>> findAllByBrand(String brand){
         List<Product> products = productRepo.findAllByBrand(brand);
         if(products.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(products.stream().map(productDtoMapper).toList(), HttpStatus.OK);
+        return new ResponseEntity<>(products.stream().map((product) -> productResponseMapper.Map(product)).toList(), HttpStatus.OK);
     }
 
-    public ResponseEntity<List<ProductDto>> searchEngine(String prompt){
+    public ResponseEntity<List<ProductResponse>> searchEngine(String prompt){
         final String promptFinal = prompt.toLowerCase();
         var filteredProducts = productRepo.findAll()
                 .stream()
                 .filter(product -> product.getProductName().toLowerCase().contains(promptFinal) || product.getBrand().toLowerCase().contains(promptFinal) || product.getDescription().toLowerCase().contains(promptFinal))
-                .map(productDtoMapper)
+                .map((product) -> productResponseMapper.Map(product))
                 .toList();
         return new ResponseEntity<>(filteredProducts, HttpStatus.OK);
     }
@@ -253,9 +254,9 @@ public class ProductService {
                 .collect(Collectors.toSet());
     }
 
-    public ResponseEntity<List<ProductDto>> getProductsForCategoryAndSubcategories(int categoryId) {
-        final List<ProductDto> productsByCategory = productRepo.findAllProductsForCategoryAndSubcategories(categoryId).stream()
-                .map(productDtoMapper)
+    public ResponseEntity<List<ProductResponse>> getProductsForCategoryAndSubcategories(int categoryId) {
+        final List<ProductResponse> productsByCategory = productRepo.findAllProductsForCategoryAndSubcategories(categoryId).stream()
+                .map((product) -> productResponseMapper.Map(product))
                 .toList();
         if(productsByCategory.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -264,13 +265,13 @@ public class ProductService {
     }
 
 
-    public ResponseEntity<ProductDto> findProductById(int id) {
+    public ResponseEntity<ProductResponse> findProductById(int id) {
         Optional<Product> productOptional = productRepo.findById(id);
         if (productOptional.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         Product product = productOptional.get();
-        return new ResponseEntity<>(productDtoMapper.apply(product), HttpStatus.OK);
+        return new ResponseEntity<>(productResponseMapper.Map(product), HttpStatus.OK);
     }
 
 

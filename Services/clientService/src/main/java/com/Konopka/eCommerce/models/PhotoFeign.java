@@ -19,7 +19,7 @@ public interface PhotoFeign {
 
 
     @GetMapping("/photo/{id}")
-    ResponseEntity<Path> findPhotoById(@PathVariable int id);
+    ResponseEntity<String> findPhotoById(@PathVariable int id);
 
 //
 //    @GetMapping("/test")
