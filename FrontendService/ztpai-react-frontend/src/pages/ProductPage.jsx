@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Container,
@@ -11,37 +11,55 @@ import {
   Carousel,
   Spinner
 } from 'react-bootstrap';
+import { CartProductsContext } from "../Contexts/CartProductsContext.jsx";
+
 import NavBar from '../Components/NavBar.jsx';
 import Footer from '../Components/Footer.jsx';
-import reactLogo from '../assets/rb_3269.png';
+import reactLogo from "../assets/1.jpg";
 import { useNavigate } from "react-router-dom";
 import useGetFetch from "../hooks/useGetFetch.jsx";
 import useFetch from "../hooks/usePostFetch.jsx";
 
 const ProductPage = ({ token, url, client }) => {
+  const [cartQuantity, setCartQuantity] = useState(null);
+
   const { productId } = useParams();
   const navigate = useNavigate();
-
+  const { addToCarMultiple } = useContext(CartProductsContext);
   const [keycloakClientData, setKeycloakClientData] = useState(null);
   const [products, setProducts] = useState(null);
   const [clientData, setClientData] = useState(null);
   const [newReview, setNewReview] = useState({ commentBody: '', score: 0 });
   const [product, setProduct] = useState({});
-  const [comments, setComments] = useState([]); // Initialize as empty array
+  const [comments, setComments] = useState([]);
 
-  // Fetch all products
+  
+  
+  const handleAddToCart = (product, cartQuantity) => {
+    if (cartQuantity <= 0 || cartQuantity > product.quantity) {
+      alert("Invalid quantity selected!");
+      return;
+    }
+    
+    addToCarMultiple(product, cartQuantity);  // Przekazujemy całą ilość do funkcji
+    alert(`${product.productName} (${cartQuantity} szt.) was added to the cart!`);
+  };
+
+  const handleQuantityChange = (e) => {
+    setCartQuantity(Math.max(0, Math.min(e.target.value, product.quantity))); 
+  };
+
+
   const { data: productsFirst, loading: productsLoading, error: productsError } = useGetFetch(
     "http://localhost:8222/api/products/product/all", 
     token
   );
 
-  // Fetch comments for the current product
   const { data: commentsData, loading: commentsLoading, error: commentsError } = useGetFetch(
     product.productId ? `http://localhost:8222/api/comments/comment/product/${encodeURIComponent(product.productId)}` : null,
     token
   );
 
-  // Fetch client data
   const { data: clientResponseData, loading: clientLoading, error: clientError } = useGetFetch(
     keycloakClientData?.sub 
       ? `http://localhost:8222/api/clients/client/keycloak/${encodeURIComponent(keycloakClientData.sub)}`
@@ -54,7 +72,6 @@ const ProductPage = ({ token, url, client }) => {
     token
   );
 
-  // Set client data when available
   useEffect(() => {
     if (clientError) {
       console.error('Error fetching client data:', clientError);
@@ -64,29 +81,24 @@ const ProductPage = ({ token, url, client }) => {
     }
   }, [clientResponseData, clientError]);
 
-  // Set Keycloak client data when available
   useEffect(() => {
     if (token && client?.idTokenParsed) {
       setKeycloakClientData(client.idTokenParsed);
     }
   }, [token, client]);
 
-  // Set products when data is available
   useEffect(() => {
     if (productsFirst?.length > 0) {
       setProducts(productsFirst);
     }
   }, [productsFirst]);
 
-  // Set comments when data is available
   useEffect(() => {
     if (commentsData) {
-      // Ensure commentsData is an array before setting it
       setComments(Array.isArray(commentsData) ? commentsData : []);
     }
   }, [commentsData]);
 
-  // Set current product when products are available
   useEffect(() => {
     if (!products?.length) return;
     
@@ -155,7 +167,6 @@ const ProductPage = ({ token, url, client }) => {
     );
   }
 
-  // Ensure comments is always an array before rendering
   const commentsList = Array.isArray(comments) ? comments : [];
 
   return (
@@ -183,17 +194,24 @@ const ProductPage = ({ token, url, client }) => {
             <h3>{product.price}</h3>
             <p>{product.description}</p>
             <Form>
-              <Form.Group controlId="productQuantity">
-                <Form.Label>Product Quantity: {product.quantity}</Form.Label>
-                <Form.Control 
-                  type="number" 
-                  max={product.quantity} 
-                  min={0} 
-                  placeholder="Enter quantity" 
-                />
-              </Form.Group>
-              <Button variant="dark" className="mt-3">Buy</Button>
-            </Form>
+      <Form.Group controlId="productQuantity">
+        <Form.Label>Product Quantity: {product.quantity}</Form.Label>
+        <Form.Control
+          type="number"
+          value={cartQuantity}  // Aktualizacja wartości w kontrolce
+          max={product.quantity}
+          min={0}
+          placeholder="Enter quantity"
+          onChange={handleQuantityChange} // Zmieniamy stan przy każdej zmianie
+        />
+      </Form.Group>
+      <Button
+        variant="outline-dark"
+        onClick={() => handleAddToCart(product, cartQuantity)} // Przesyłamy ilość do funkcji handleAddToCart
+      >
+        {"Dodaj do koszyka"}
+      </Button>
+    </Form>
           </Col>
         </Row>
 

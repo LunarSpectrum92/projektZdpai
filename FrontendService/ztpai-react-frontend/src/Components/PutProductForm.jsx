@@ -5,7 +5,7 @@ import usePostFetch from "../hooks/usePostFetch.jsx";
 
 import useGetFetch from "../hooks/useGetFetch.jsx";
 
-const PutProductForm = ({ token,productId, url }) => {
+const PutProductForm = ({ token,productId, url, photoIds }) => {
     const [formData, setFormData] = useState({
       productId: productId || "",
       productName: "",
@@ -15,6 +15,7 @@ const PutProductForm = ({ token,productId, url }) => {
       quantity: "",
       category: [],
       discount: "",
+      photoIds: photoIds
     });
   
     const [errors, setErrors] = useState({});
@@ -61,7 +62,8 @@ const PutProductForm = ({ token,productId, url }) => {
       e.preventDefault();
   
       if (validate()) {
-        sendRequest(formData); 
+        sendRequest(formData);
+       console.log(formData) 
       }
     };
   

@@ -69,6 +69,7 @@ public class OrderService {
             }
             //count total amount
             amount = amount.add(orderProductDto.price());
+            System.out.println(amount);
 
             productDtos.add(OrderDtoMapper.mapOrderProductToEntity(orderProductDto));
 

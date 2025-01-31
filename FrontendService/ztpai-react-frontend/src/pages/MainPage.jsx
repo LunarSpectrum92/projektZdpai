@@ -1,7 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
 import {  Image, Container, Row, Col, Card,Button,  Carousel, Form ,Dropdown, DropdownButton ,ButtonGroup, Spinner  } from 'react-bootstrap';
 import NavBar from '../Components/NavBar.jsx'
-import reactLogo from '../assets/rb_3269.png'
+import reactLogo from "../assets/1.jpg";
+import a from '../assets/5.jpg'
+import b from '../assets/7.jpg'
+import c from '../assets/3.jpg'
+import d from '../assets/4.jpg'
+
+
 import Footer from '../Components/Footer.jsx';
 import {CartProductsContext} from '../Contexts/CartProductsContext.jsx';
 import { products } from '../assets/products.js';
@@ -109,19 +115,19 @@ const MainPage = ({token}) => {
       <div className="min-vh-100">
 
         <NavBar token={token}/>    
-      <div className="bg-light text-center py-5">
+      <div className="text-center py-5" style={{backgroundColor: "#f1e9db"}}>
         <Container>
         <Row>
           <Col md={6} className="order-2 order-md-1">
             <Carousel variant="dark">
               <Carousel.Item interval={10000}>
-                <Image src={reactLogo} className="" fluid />
+                <Image src={a} className="" fluid />
               </Carousel.Item>
               <Carousel.Item interval={10000}>
-                <Image src={reactLogo} className="" fluid />
+                <Image src={b} className="" fluid />
               </Carousel.Item>
               <Carousel.Item interval={10000}>
-                <Image src={reactLogo} className="" fluid />
+                <Image src={c} className="" fluid />
               </Carousel.Item>
             </Carousel>
           </Col>

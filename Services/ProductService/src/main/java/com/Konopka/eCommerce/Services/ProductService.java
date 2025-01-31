@@ -148,6 +148,7 @@ public class ProductService {
                         .quantity(productDto.quantity())
                         .discount(productDto.discount())
                         .category(categoryRepo.findAllById(productDto.category()))
+                .photoIds(productDto.photoIds())
                         .build();
 
         productRepo.save(product);

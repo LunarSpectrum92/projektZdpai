@@ -44,10 +44,22 @@ const MainPage = ({ token }) => {
     }));
   };
 
+
+
+  const photoPathsSplit = (paths) => {
+
+    let ids = [];
+    paths.map((path) => {
+      ids.push(path.split('/').pop());
+    })
+    return ids;
+  }
+
+
   const indexOfLastProduct = state.activePage * state.limit;
   const indexOfFirstProduct = indexOfLastProduct - state.limit;
   const displayProducts = state.data.slice(indexOfFirstProduct, indexOfLastProduct);
-
+console.log(products)
   return (
     <>
       <Container className="my-5">
@@ -55,9 +67,9 @@ const MainPage = ({ token }) => {
           <Spinner animation="border" />
         ) : error ? (
           <p>Błąd: {error}</p>
-        ) : (
+        ) : ( 
           <Row className="g-3 mb-2">
-            {displayProducts.map((product) => (
+            {displayProducts.map((product) => ( 
               <Col md={12} sm={12} xs={12} key={product.productId}>
                   <Card className="h-100 border-1 ">
                     <Row noGutters>
@@ -96,7 +108,7 @@ const MainPage = ({ token }) => {
                       <Accordion.Item eventKey="0" className="border-0">
                         <Accordion.Header>update product</Accordion.Header>
                         <Accordion.Body>
-                            <PutProductForm token={token} url={`http://localhost:8222/api/products/product/put`} productId={product.productId}/>
+                            <PutProductForm token={token} url={`http://localhost:8222/api/products/product/put`} productId={product.productId} photoIds={photoPathsSplit(product.photoPaths)}/>
                         </Accordion.Body>
                       </Accordion.Item>
                     </Accordion>

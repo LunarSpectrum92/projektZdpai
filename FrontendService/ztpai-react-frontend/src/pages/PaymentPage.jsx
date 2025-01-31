@@ -39,7 +39,7 @@ const PaymentPage = ({ token }) => {
     }
     
     Pay();
-    if(error) clearCart();
+    if(!error) clearCart();
 
   };
 

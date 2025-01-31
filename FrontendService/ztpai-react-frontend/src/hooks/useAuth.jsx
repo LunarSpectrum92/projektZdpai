@@ -11,15 +11,15 @@ const client = new Keycloak({
     clientId: import.meta.env.VITE_KEYCLOAK_CLIENT,
   });
 
-
   const useAuth = () => {
     const isRun = useRef(false);
     const [token, setToken] = useState(null);
+    const [roles, setRoles] = useState(null);
     const [isLogin, setLogin] = useState(false);
   
     useEffect(() => {
       if (isRun.current) return;
-  
+    
       isRun.current = true;
       client
         .init({
@@ -28,10 +28,22 @@ const client = new Keycloak({
         .then((res) => {
           setLogin(res);
           setToken(client.token);
-          console.log(client);
+    
+          const userRoles = client.resourceAccess?.AuthService?.roles || [];
+          console.log("Załadowane role:", userRoles);
+          setRoles(userRoles);
+        })
+        .catch((err) => {
+          console.error("Błąd logowania:", err);
         });
     }, []);
+    
+
+
+
+
+
   
-    return [client, isLogin, token];
+    return [client, isLogin, token, roles];
   };
 export default useAuth;

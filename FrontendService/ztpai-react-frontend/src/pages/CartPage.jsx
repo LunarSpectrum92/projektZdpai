@@ -1,4 +1,4 @@
-import reactLogo from '../assets/rb_3269.png';
+import reactLogo from "../assets/1.jpg";
 import React, { useContext, useEffect, useState } from 'react';
 import { Container, Card, Button, Badge } from 'react-bootstrap';
 import NavBar from '../Components/NavBar.jsx';
@@ -38,7 +38,7 @@ const handleSubmit = () => {
     orderProductsList: cart.map(product => ({
       productId: product.productId,
       quantity: product.quantityCart,
-      price: product.price
+      price: product.price * product.quantityCart
     }))
   };
 
@@ -46,11 +46,8 @@ const handleSubmit = () => {
   console.log(updatedOrderData);
 
 
-
+  console.log(updatedOrderData)
   sendRequest(updatedOrderData);
-
-
-
 
 } 
 

@@ -5,6 +5,9 @@ import { Spinner, Col, Row, Nav, Tab, Accordion, ListGroup, Card } from "react-b
 import AddressForm from '../Components/AddressForm';
 import { User, MapPin, ShoppingBag } from 'lucide-react';
 import useGetFetch from "../hooks/useGetFetch";
+import OrdersForClient from "../Components/OrdersForClient";
+
+
 
 const AccountPage = ({ token, client }) => {
     const [keycloakClientData, setKeycloakClientData] = useState(null);
@@ -116,7 +119,7 @@ const AccountPage = ({ token, client }) => {
                                 </Tab.Pane>
                                 <Tab.Pane eventKey="orders">
                                     <h4>My Orders</h4>
-                                    <p>Orders history will be displayed here</p>
+                                    <OrdersForClient token={token} clientId={clientData.userId}/>
                                 </Tab.Pane>
                             </Tab.Content>
                         </Col>

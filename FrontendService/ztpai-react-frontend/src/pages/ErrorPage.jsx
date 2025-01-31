@@ -5,7 +5,7 @@ import React from 'react';
 
 
 
-const ErrorPage = () => {
+const ErrorPage = ({token}) => {
 
   
     return (

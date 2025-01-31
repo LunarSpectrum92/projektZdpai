@@ -120,6 +120,28 @@ const CartProductsContextProvider = ({ children }) => {
     });
   };
   
+
+  const addToCarMultiple = (product, quantity1) => {
+    console.log("Adding product to cart:", product, "Quantity:", quantity1);
+  
+    setCart((prevCart) => {
+      const updatedCart = prevCart.map((item) =>
+        item.productId === product.productId
+          ? { ...item, quantityCart: item.quantityCart + quantity1 } 
+          : item
+      );
+  
+      if (!updatedCart.some((item) => item.productId === product.productId)) {
+        updatedCart.push({ ...product, quantityCart: quantity1 });
+      }
+  
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+      return updatedCart;
+    });
+  };
+
+
+
   useEffect(() => {
     if (!isActive) return;
     const interval = setInterval(updateTimer, 1000);
@@ -170,7 +192,8 @@ const CartProductsContextProvider = ({ children }) => {
         stopTimer,
         restartTimer,
         updateTimer,
-        setDeadline
+        setDeadline,
+        addToCarMultiple
       }}
     >
       {children}
